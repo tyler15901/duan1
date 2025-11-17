@@ -13,9 +13,13 @@ Hệ thống quản lý tour du lịch được xây dựng bằng PHP thuần, 
 
 ### 1. Clone hoặc tải dự án về máy
 
-```bash
-cd C:\laragon\www\duan1
-```
+git checkout -b feature/my-feature
+git checkout main
+git fetch origin
+git pull origin main
+git checkout feature/my-feature
+git merge main
+git push origin feature/my-feature
 
 ### 2. Cấu hình Database
 
