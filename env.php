@@ -2,7 +2,7 @@
 
 define('BASE_URL',          'http://localhost/duan1/');
 
-define('PATH_ROOT',         __DIR__ . '/../');
+define('PATH_ROOT',         __DIR__ . '/');
 
 define('PATH_VIEW',         PATH_ROOT . 'views/');
 

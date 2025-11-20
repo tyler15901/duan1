@@ -2,6 +2,12 @@
 // Entry point của ứng dụng
 session_start();
 
+// Prefer Composer autoload (PSR-4) when available
+$composerAutoload = __DIR__ . '/../vendor/autoload.php';
+if (file_exists($composerAutoload)) {
+    require_once $composerAutoload;
+}
+
 // Load environment configuration
 require_once __DIR__ . '/../env.php';
 
