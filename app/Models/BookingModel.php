@@ -52,4 +52,36 @@ class BookingModel extends BaseModel {
         $stmt = $this->conn->prepare($sql);
         $stmt->execute(['bk' => $bookingId, 'lkh' => $scheduleId]);
     }
+    // --- PHẦN DÀNH CHO ADMIN ---
+
+    // 5. Lấy danh sách tất cả booking (Có thể lọc theo trạng thái)
+    public function getAllBookings() {
+        $sql = "SELECT b.*, t.TenTour, k.HoTen as TenKhach, k.SoDienThoai 
+                FROM booking b
+                JOIN tour t ON b.MaTour = t.MaTour
+                LEFT JOIN khachhang k ON b.MaKhachHang = k.MaKhachHang
+                ORDER BY b.NgayDat DESC"; // Mới nhất lên đầu
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    // 6. Lấy chi tiết 1 đơn hàng (Kèm thông tin khách và tour)
+    public function getBookingDetail($id) {
+        $sql = "SELECT b.*, t.TenTour, t.HinhAnh, k.HoTen, k.Email, k.SoDienThoai, k.DiaChi 
+                FROM booking b
+                JOIN tour t ON b.MaTour = t.MaTour
+                LEFT JOIN khachhang k ON b.MaKhachHang = k.MaKhachHang
+                WHERE b.MaBooking = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch();
+    }
+
+    // 7. Cập nhật trạng thái đơn hàng (Duyệt / Hủy / Đã thanh toán)
+    public function updateStatus($id, $status) {
+        $sql = "UPDATE booking SET TrangThai = :stt WHERE MaBooking = :id";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute(['stt' => $status, 'id' => $id]);
+    }
 }
