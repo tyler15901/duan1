@@ -37,4 +37,21 @@ class AllocationModel extends BaseModel {
         $stmt = $this->conn->prepare($sql);
         return $stmt->execute(['id' => $id]);
     }
+    // --- DÀNH CHO GIAO DIỆN HDV ---
+    
+    // 4. Lấy lịch được phân công cho HDV (Dựa theo tên)
+    public function getMySchedules($guideName) {
+        $sql = "SELECT lkh.*, t.TenTour, t.SoNgay, t.HinhAnh
+                FROM phanbonhansu pb
+                JOIN lichkhoihanh lkh ON pb.MaLichKhoiHanh = lkh.MaLichKhoiHanh
+                JOIN tour t ON lkh.MaTour = t.MaTour
+                JOIN nhansu ns ON pb.MaNhanSu = ns.MaNhanSu
+                WHERE ns.HoTen = :name 
+                  AND lkh.NgayKhoiHanh >= CURDATE() -- Chỉ hiện lịch tương lai
+                ORDER BY lkh.NgayKhoiHanh ASC";
+                
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['name' => $guideName]);
+        return $stmt->fetchAll();
+    }
 }
