@@ -4,144 +4,194 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $data['title']; ?></title>
-    <style>
-        /* CSS Reset cơ bản */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #333; }
-        
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        
-        /* Header đơn giản */
-        header { text-align: center; margin-bottom: 40px; padding-top: 20px; }
-        header h1 { color: #0056b3; font-size: 2.5rem; margin-bottom: 10px; }
-        header p { color: #666; font-size: 1.1rem; }
-
-        /* Grid Layout cho Tour */
-        .tour-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 25px; 
-        }
-
-        /* Card Tour Style */
-        .tour-card { 
-            background: white; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-            transition: transform 0.3s ease, box-shadow 0.3s ease; 
-            display: flex; 
-            flex-direction: column; 
-        }
-        
-        .tour-card:hover { 
-            transform: translateY(-5px); 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
-        }
-
-        .tour-img-wrap { position: relative; height: 200px; overflow: hidden; }
-        .tour-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
-        .tour-card:hover .tour-img { transform: scale(1.1); }
-        
-        /* Nhãn Loại Tour (Góc trên ảnh) */
-        .tour-category {
-            position: absolute; top: 10px; right: 10px;
-            background: rgba(0, 86, 179, 0.9); color: white;
-            padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;
-        }
-
-        .tour-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-        
-        .tour-title { 
-            font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; 
-            color: #2c3e50; line-height: 1.4;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-        }
-
-        .tour-meta { 
-            font-size: 0.9rem; color: #7f8c8d; margin-bottom: 15px; 
-            display: flex; gap: 15px;
-        }
-
-        .tour-price-row { 
-            margin-top: auto; /* Đẩy xuống đáy */
-            display: flex; justify-content: space-between; align-items: center; 
-            border-top: 1px solid #eee; padding-top: 15px;
-        }
-
-        .price { color: #e74c3c; font-size: 1.2rem; font-weight: bold; }
-        .btn-detail { 
-            text-decoration: none; background: #eaf2f8; color: #0056b3; 
-            padding: 8px 15px; border-radius: 6px; font-weight: 600; transition: 0.2s; 
-        }
-        .btn-detail:hover { background: #0056b3; color: white; }
-    </style>
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>Khám Phá Thế Giới</h1>
-        <p>Hơn 100+ địa điểm du lịch hấp dẫn đang chờ đón bạn</p>
-    </header>
+    <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
-    <div class="tour-grid">
-        <?php if (!empty($data['tours'])): ?>
-            <?php foreach ($data['tours'] as $tour): ?>
-                <div class="tour-card">
-                    <?php 
-                        $dbPath = $tour['HinhAnh'] ?? ''; 
-                        // Đường dẫn hiển thị trên web (URL)
-                        $webUrl = BASE_URL . 'uploads/' . $dbPath;
-                        // Đường dẫn kiểm tra file trên ổ cứng (Physical Path)
-                        $checkPath = 'uploads/' . $dbPath; 
-                        
-                        // Nếu có tên ảnh và file tồn tại thật
-                        if (!empty($dbPath) && file_exists($checkPath)) {
-                            $imgSrc = $webUrl;
-                        } else {
-                            // Ảnh placeholder đẹp nếu lỗi
-                            $imgSrc = 'https://placehold.co/600x400/e0e0e0/999999?text=No+Image';
-                        }
-                    ?>
-
-                    <div class="tour-img-wrap">
-                        <img src="<?php echo $imgSrc; ?>" alt="<?php echo htmlspecialchars($tour['TenTour']); ?>" class="tour-img">
-                        <div class="tour-category"><?php echo $tour['TenLoai'] ?? 'Tour'; ?></div>
-                    </div>
+    <section class="banner">
+        <div class="banner-overlay"></div>
+        <div class="container">
+            <div class="banner-content">
+                <div class="banner-left">
+                    <h1 class="banner-title">Hơn 1000+ Tour,<br>Khám Phá Ngay</h1>
+                    <p class="banner-subtitle">Giá tốt – hỗ trợ 24/7 – khắp nơi</p>
                     
-                    <div class="tour-info">
-                        <div class="tour-title">
-                            <?php echo htmlspecialchars($tour['TenTour']); ?>
+                    <form action="index.php" method="GET" class="search-form">
+                        <div class="form-group">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input type="text" name="q" placeholder="Bạn muốn đi đâu?" class="form-input">
                         </div>
-                        
-                        <div class="tour-meta">
-                            <span>🕒 <?php echo $tour['SoNgay']; ?> Ngày</span>
-                            <span>👤 Max: <?php echo $tour['SoChoToiDa']; ?></span>
+                        <div class="form-group">
+                            <i class="fas fa-calendar"></i>
+                            <input type="text" placeholder="Ngày khởi hành" class="form-input" onfocus="(this.type='date')">
                         </div>
-
-                        <div class="tour-price-row">
-                            <div class="price">
-                                <?php 
-                                    if (!empty($tour['GiaHienTai']) && $tour['GiaHienTai'] > 0) {
-                                        echo number_format($tour['GiaHienTai'], 0, ',', '.') . ' đ';
-                                    } else {
-                                        echo "Liên hệ";
-                                    }
-                                ?>
-                            </div>
-                            <a href="<?php echo BASE_URL . 'tour/detail/' . $tour['MaTour']; ?>" class="btn-detail">Đặt ngay</a>
-                        </div>
-                    </div>
+                        <button type="submit" class="btn-search">
+                            <i class="fas fa-search"></i> TÌM TOUR NGAY
+                        </button>
+                    </form>
                 </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <p style="text-align: center; grid-column: 1/-1; font-size: 1.2rem; color: #888;">
-                Hiện tại chưa có tour nào đang mở bán. Vui lòng quay lại sau!
-            </p>
-        <?php endif; ?>
-    </div>
-</div>
+                
+                <?php if(!empty($data['tourUuDai'][0])): $top = $data['tourUuDai'][0]; ?>
+                <div class="banner-right" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 30px; border-radius: 15px; color: #fff; border: 1px solid rgba(255,255,255,0.3); width: 350px; display: none;">
+                    <style>@media (min-width: 1024px) { .banner-right { display: block !important; } }</style>
+                    
+                    <h3 style="color: #FFD700; margin-bottom: 10px; font-size: 1.5rem;"><?php echo htmlspecialchars($top['TenTour']); ?></h3>
+                    <p class="tour-itinerary" style="margin-bottom: 15px;"><i class="far fa-clock"></i> <?php echo $top['SoNgay']; ?> Ngày trải nghiệm</p>
+                    <div class="tour-price">
+                        <span class="price-label">Giá chỉ từ</span>
+                        <span class="price-value" style="font-size: 1.8rem; font-weight: bold; color: #FF6600; display: block;">
+                            <?php echo $top['final_price']; ?> </span>
+                    </div>
+                    <a href="<?php echo $top['detail_link']; ?>" style="background: #fff; color: var(--primary); border: none; width: 40px; height: 40px; border-radius: 50%; margin-top: 20px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </section>
+
+    <section class="policies">
+        <div class="container">
+            <div class="policies-grid">
+                <div class="policy-item">
+                    <div class="policy-icon"><i class="fas fa-dollar-sign"></i></div>
+                    <h3>Giá tour ưu đãi</h3>
+                    <p>Nhiều khuyến mại, ưu đãi hấp dẫn.</p>
+                </div>
+                <div class="policy-item">
+                    <div class="policy-icon"><i class="fas fa-award"></i></div>
+                    <h3>Uy tín & Chuẩn mực</h3>
+                    <p>Đối tác chọn lọc, đảm bảo chất lượng.</p>
+                </div>
+                <div class="policy-item">
+                    <div class="policy-icon"><i class="fas fa-headset"></i></div>
+                    <h3>Nhiệt tình & Tận tâm</h3>
+                    <p>Hỗ trợ khách hàng 24/7 nhanh chóng.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tour-section">
+        <div class="container">
+            <h2 class="section-title">🔥 Tour Ưu Đãi</h2>
+            <div class="tour-list">
+                <?php if(!empty($data['tourUuDai'])): ?>
+                    <?php foreach($data['tourUuDai'] as $t): ?>
+                        <div class="tour-card">
+                            <div class="tour-img-wrap">
+                                <a href="<?php echo $t['detail_link']; ?>">
+                                    <img src="<?php echo $t['final_image']; ?>" 
+                                         alt="<?php echo htmlspecialchars($t['TenTour']); ?>"
+                                         onerror="this.src='https://placehold.co/400x300?text=No+Image'">
+                                </a>
+                                <span class="discount-tag"><?php echo $t['label']; ?></span>
+                            </div>
+                            <div class="tour-info">
+                                <span class="tour-cat"><i class="fas fa-map-marker-alt"></i> Khởi hành từ HN/HCM</span>
+                                <h3 class="tour-title">
+                                    <a href="<?php echo $t['detail_link']; ?>">
+                                        <?php echo htmlspecialchars($t['TenTour']); ?>
+                                    </a>
+                                </h3>
+                                <div class="tour-meta">
+                                    <span><i class="far fa-clock"></i> <?php echo $t['SoNgay']; ?> Ngày</span>
+                                    <span><i class="fas fa-user-friends"></i> <?php echo $t['SoChoToiDa']; ?> chỗ</span>
+                                </div>
+                                <div class="tour-price"><?php echo $t['final_price']; ?></div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+    </section>
+
+    <section class="tour-section" id="trong-nuoc">
+        <div class="container">
+            <h2 class="section-title">🇻🇳 Tour Trong Nước</h2>
+            <div class="tour-list">
+                <?php if(!empty($data['tourTrongNuoc'])): ?>
+                    <?php foreach($data['tourTrongNuoc'] as $t): ?>
+                        <div class="tour-card">
+                            <div class="tour-img-wrap">
+                                <a href="<?php echo $t['detail_link']; ?>">
+                                    <img src="<?php echo $t['final_image']; ?>" 
+                                         alt="<?php echo htmlspecialchars($t['TenTour']); ?>"
+                                         onerror="this.src='https://placehold.co/400x300?text=No+Image'">
+                                </a>
+                            </div>
+                            <div class="tour-info">
+                                <h3 class="tour-title">
+                                    <a href="<?php echo $t['detail_link']; ?>"><?php echo htmlspecialchars($t['TenTour']); ?></a>
+                                </h3>
+                                <div class="tour-meta">
+                                    <span><i class="far fa-clock"></i> <?php echo $t['SoNgay']; ?> Ngày</span>
+                                    <span><i class="fas fa-user-friends"></i> <?php echo $t['SoChoToiDa']; ?> chỗ</span>
+                                </div>
+                                <div class="tour-price"><?php echo $t['final_price']; ?></div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+            <div class="view-more">
+                <a href="#" class="btn-view-more">Xem tất cả Tour Trong Nước <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <section class="tour-section" id="nuoc-ngoai">
+        <div class="container">
+            <h2 class="section-title">🌏 Tour Nước Ngoài</h2>
+            <div class="tour-list">
+                <?php if(!empty($data['tourQuocTe'])): ?>
+                    <?php foreach($data['tourQuocTe'] as $t): ?>
+                        <div class="tour-card">
+                            <div class="tour-img-wrap">
+                                <a href="<?php echo $t['detail_link']; ?>">
+                                    <img src="<?php echo $t['final_image']; ?>" 
+                                         alt="<?php echo htmlspecialchars($t['TenTour']); ?>"
+                                         onerror="this.src='https://placehold.co/400x300?text=No+Image'">
+                                </a>
+                            </div>
+                            <div class="tour-info">
+                                <h3 class="tour-title">
+                                    <a href="<?php echo $t['detail_link']; ?>"><?php echo htmlspecialchars($t['TenTour']); ?></a>
+                                </h3>
+                                <div class="tour-meta">
+                                    <span><i class="far fa-clock"></i> <?php echo $t['SoNgay']; ?> Ngày</span>
+                                    <span><i class="fas fa-user-friends"></i> <?php echo $t['SoChoToiDa']; ?> chỗ</span>
+                                </div>
+                                <div class="tour-price"><?php echo $t['final_price']; ?></div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+            <div class="view-more">
+                <a href="#" class="btn-view-more">Xem tất cả Tour Quốc Tế <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <section class="destinations" id="diem-den">
+        <div class="container">
+            <h2 class="section-title">Điểm Đến Hàng Đầu</h2>
+            <div class="destinations-grid">
+                <div class="destination-card"><img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400"><div class="destination-overlay"><h3>Miền Bắc</h3></div></div>
+                <div class="destination-card"><img src="https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=400"><div class="destination-overlay"><h3>Miền Nam</h3></div></div>
+                <div class="destination-card"><img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400"><div class="destination-overlay"><h3>Miền Tây</h3></div></div>
+                <div class="destination-card"><img src="https://images.unsplash.com/photo-1464817739973-48a2ac745a80?w=400"><div class="destination-overlay"><h3>Miền Trung</h3></div></div>
+            </div>
+        </div>
+    </section>
+
+    <?php require_once __DIR__ . '/../layout/footer.php'; ?>
 
 </body>
 </html>

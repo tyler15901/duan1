@@ -9,6 +9,7 @@ require_once '../config/config.php';
 require_once '../app/Core/Database.php';
 require_once '../app/Core/BaseModel.php';
 require_once '../app/Core/Controller.php'; // Tạo file này ở bước sau
+require_once '../app/Core/Session.php';
 require_once '../app/Core/App.php';        // Tạo file này ở bước sau
 
 // 3. Khởi chạy ứng dụng
