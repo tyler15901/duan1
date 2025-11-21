@@ -205,4 +205,37 @@ class TourModel extends BaseModel {
         $stmt = $this->conn->prepare($sql);
         $stmt->execute(['id' => $tourId, 'gia' => $price]);
     }
+    // --- QUẢN LÝ LỊCH KHỞI HÀNH ---
+
+    // 5. Thêm lịch khởi hành
+    public function createSchedule($data) {
+        // LichCode tự sinh bằng Trigger trong DB, hoặc mình tự sinh ở đây nếu muốn
+        // Ở đây mình để Trigger lo, hoặc insert chuỗi ngẫu nhiên nếu trigger lỗi
+        $sql = "INSERT INTO lichkhoihanh (MaTour, NgayKhoiHanh, GioTapTrung, DiaDiemTapTrung, SoKhachHienTai, TrangThai) 
+                VALUES (:matour, :ngay, :gio, :diadiem, 0, 'Nhận khách')";
+        
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            'matour' => $data['MaTour'],
+            'ngay' => $data['NgayKhoiHanh'],
+            'gio' => $data['GioTapTrung'],
+            'diadiem' => $data['DiaDiemTapTrung']
+        ]);
+    }
+
+    // 6. Xóa lịch khởi hành
+    public function deleteSchedule($id) {
+        // Chỉ xóa được nếu chưa có khách đặt (SoKhachHienTai = 0)
+        $sql = "DELETE FROM lichkhoihanh WHERE MaLichKhoiHanh = :id AND SoKhachHienTai = 0";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute(['id' => $id]);
+    }
+
+    // 7. Lấy thông tin 1 lịch (để sửa nếu cần)
+    public function getScheduleById($id) {
+        $sql = "SELECT * FROM lichkhoihanh WHERE MaLichKhoiHanh = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch();
+    }
 }

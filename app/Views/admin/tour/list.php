@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title><?= $data['title'] ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-light">
     <div class="container py-5">
         <div class="d-flex justify-content-between mb-4">
@@ -30,29 +32,37 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach($data['tours'] as $t): ?>
-                        <tr>
-                            <td><?= $t['MaTour'] ?></td>
-                            <td>
-                                <img src="<?= BASE_URL . 'uploads/' . $t['HinhAnh'] ?>" width="80" height="50" style="object-fit:cover; border-radius:4px;">
-                            </td>
-                            <td style="max-width: 300px;"><?= $t['TenTour'] ?></td>
-                            <td class="text-danger fw-bold">
-                                <?= !empty($t['GiaHienTai']) ? number_format($t['GiaHienTai']) . ' đ' : 'Chưa có giá' ?>
-                            </td>
-                            <td><?= $t['SoNgay'] ?> ngày</td>
-                            <td>
-                                <span class="badge bg-<?= $t['TrangThai'] == 'Hoạt động' ? 'primary' : 'secondary' ?>">
-                                    <?= $t['TrangThai'] ?>
-                                </span>
-                            </td>
-                            <td>
-                                <a href="<?= BASE_URL ?>adminTour/edit/<?= $t['MaTour'] ?>" class="btn btn-sm btn-warning text-white">
-        <i class="fas fa-edit"></i> Sửa
-    </a>
-                                <a href="<?= BASE_URL ?>adminTour/delete/<?= $t['MaTour'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn chắc chắn muốn xóa?')">Xóa</a>
-                            </td>
-                        </tr>
+                        <?php foreach ($data['tours'] as $t): ?>
+                            <tr>
+                                <td><?= $t['MaTour'] ?></td>
+                                <td>
+                                    <img src="<?= BASE_URL . 'uploads/' . $t['HinhAnh'] ?>" width="80" height="50"
+                                        style="object-fit:cover; border-radius:4px;">
+                                </td>
+                                <td style="max-width: 300px;"><?= $t['TenTour'] ?></td>
+                                <td class="text-danger fw-bold">
+                                    <?= !empty($t['GiaHienTai']) ? number_format($t['GiaHienTai']) . ' đ' : 'Chưa có giá' ?>
+                                </td>
+                                <td><?= $t['SoNgay'] ?> ngày</td>
+                                <td>
+                                    <span class="badge bg-<?= $t['TrangThai'] == 'Hoạt động' ? 'primary' : 'secondary' ?>">
+                                        <?= $t['TrangThai'] ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="<?= BASE_URL ?>adminTour/edit/<?= $t['MaTour'] ?>"
+                                        class="btn btn-sm btn-warning text-white">
+                                        <i class="fas fa-edit"></i> Sửa
+                                    </a>
+                                    <a href="<?= BASE_URL ?>adminSchedule/index/<?= $t['MaTour'] ?>"
+                                        class="btn btn-sm btn-info text-white" title="Thêm ngày khởi hành">
+                                        <i class="fas fa-calendar-plus"></i> Lịch
+                                    </a>
+                                    <a href="<?= BASE_URL ?>adminTour/delete/<?= $t['MaTour'] ?>"
+                                        class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Bạn chắc chắn muốn xóa?')">Xóa</a>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -60,4 +70,5 @@
         </div>
     </div>
 </body>
+
 </html>
