@@ -6,7 +6,7 @@
     <title><?php echo $data['title'] ?? 'Du Lịch Việt'; ?></title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/style.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/style.css">
     
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; }
