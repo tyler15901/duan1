@@ -31,12 +31,15 @@ cd C:\laragon\www\duan1
 ### 3. Cấu hình Web Server
 
 #### Apache
+
 - Đảm bảo mod_rewrite đã được bật
 - Document root trỏ đến thư mục `public/`
 - File `.htaccess` đã có sẵn trong thư mục `public/`
 
 #### Nginx
+
 Cấu hình tương tự:
+
 ```nginx
 location / {
     try_files $uri $uri/ /index.php?url=$uri&$args;
@@ -46,6 +49,7 @@ location / {
 ### 4. Cấu hình URL
 
 Cập nhật `BASE_URL` trong file `env.php` theo domain của bạn:
+
 ```php
 define('BASE_URL', 'http://localhost/duan1/');
 ```
@@ -77,6 +81,7 @@ duan1/
 ## Chức Năng Chính
 
 ### 1. Quản Lý Tour
+
 - Xem danh sách tour
 - Thêm mới tour
 - Sửa thông tin tour
@@ -84,17 +89,20 @@ duan1/
 - Quản lý loại tour
 
 ### 2. Quản Lý Đặt Tour (Booking)
+
 - Xem danh sách đặt tour
 - Tạo đặt tour mới
 - Cập nhật trạng thái đặt tour
 - Quản lý khách hàng
 
 ### 3. Báo Cáo
+
 - Báo cáo doanh thu theo thời gian
 - Báo cáo lợi nhuận
 - Thống kê số lượng đặt tour
 
 ### 4. Xác Thực Người Dùng
+
 - Đăng nhập
 - Đăng xuất
 - Quản lý session
@@ -102,6 +110,7 @@ duan1/
 ## Tài Khoản Mặc Định
 
 Sau khi import database, bạn có thể đăng nhập với:
+
 - **Username:** admin
 - **Password:** password (mặc định, nên đổi sau khi cài đặt)
 
@@ -122,6 +131,7 @@ Các routes chính được định nghĩa trong `configs/routes.php`:
 ### Thêm Route Mới
 
 Thêm route vào `configs/routes.php`:
+
 ```php
 'route-name' => ['ControllerName', 'methodName'],
 ```
@@ -129,12 +139,13 @@ Thêm route vào `configs/routes.php`:
 ### Thêm Model Mới
 
 Tạo file trong `app/models/` và kế thừa từ Database class:
+
 ```php
 require_once __DIR__ . '/../core/Database.php';
 
 class YourModel {
     private $db;
-    
+
     public function __construct() {
         $this->db = Database::connect();
     }
@@ -144,6 +155,7 @@ class YourModel {
 ### Thêm Controller Mới
 
 Tạo file trong `app/controllers/`:
+
 ```php
 class YourController {
     public function index() {
@@ -163,6 +175,7 @@ class YourController {
 ## Hỗ Trợ
 
 Nếu gặp vấn đề, vui lòng kiểm tra:
+
 - Logs của web server (Apache/Nginx)
 - PHP error logs
 - Database connection settings trong `env.php`
@@ -171,4 +184,3 @@ Nếu gặp vấn đề, vui lòng kiểm tra:
 ## License
 
 Dự án này được phát triển cho mục đích học tập và quản lý.
-
