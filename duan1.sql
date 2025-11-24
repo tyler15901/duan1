@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 14, 2025 at 02:45 AM
+-- Generation Time: Nov 24, 2025 at 11:18 AM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.26
 
@@ -43,6 +43,13 @@ CREATE TABLE `booking` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
+-- Dumping data for table `booking`
+--
+
+INSERT INTO `booking` (`MaBooking`, `MaBookingCode`, `MaTour`, `MaKhachHang`, `NgayDat`, `NgayKhoiHanh`, `SoLuongKhach`, `TongTien`, `TienCoc`, `TrangThai`, `NguoiTao`, `GhiChu`) VALUES
+(1, 'BK2025000000', 3, 1, '2025-11-21', '2025-12-01', 1, 5990000.00, 0.00, 'Đã xác nhận', NULL, '13311331 (Người lớn: 1, Trẻ em: 0)');
+
+--
 -- Triggers `booking`
 --
 DELIMITER $$
@@ -76,6 +83,13 @@ CREATE TABLE `booking_lichkhoihanh` (
   `MaBooking` int NOT NULL,
   `MaLichKhoiHanh` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `booking_lichkhoihanh`
+--
+
+INSERT INTO `booking_lichkhoihanh` (`MaBooking`, `MaLichKhoiHanh`) VALUES
+(1, 7);
 
 --
 -- Triggers `booking_lichkhoihanh`
@@ -187,6 +201,22 @@ CREATE TABLE `giatour` (
   `NgayKetThuc` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `giatour`
+--
+
+INSERT INTO `giatour` (`MaGia`, `MaTour`, `DoiTuong`, `Gia`, `NgayBatDau`, `NgayKetThuc`) VALUES
+(1, 1, 'Người lớn', 2500000.00, '2024-01-01', '2025-12-31'),
+(2, 1, 'Trẻ em', 1250000.00, '2024-01-01', '2025-12-31'),
+(3, 2, 'Người lớn', 4500000.00, '2024-01-01', '2025-12-31'),
+(4, 2, 'Trẻ em', 2250000.00, '2024-01-01', '2025-12-31'),
+(5, 3, 'Người lớn', 5990000.00, '2024-01-01', '2025-12-31'),
+(6, 3, 'Trẻ em', 3000000.00, '2024-01-01', '2025-12-31'),
+(7, 4, 'Người lớn', 12900000.00, '2024-01-01', '2025-12-31'),
+(8, 4, 'Trẻ em', 10900000.00, '2024-01-01', '2025-12-31'),
+(9, 5, 'Người lớn', 15500000.00, '2024-01-01', '2025-12-31'),
+(10, 6, 'Người lớn', 0.00, '2024-01-01', '2025-12-31');
+
 -- --------------------------------------------------------
 
 --
@@ -209,10 +239,31 @@ CREATE TABLE `goidichvu` (
 CREATE TABLE `hinhanhtour` (
   `MaHinhAnh` int NOT NULL,
   `MaTour` int NOT NULL,
-  `DuongDan` varchar(500) NOT NULL,
-  `LaAnhChinh` tinyint(1) DEFAULT '0',
-  `ThuTu` int DEFAULT '0'
+  `DuongDan` varchar(500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `hinhanhtour`
+--
+
+INSERT INTO `hinhanhtour` (`MaHinhAnh`, `MaTour`, `DuongDan`) VALUES
+(1, 4, 'anhtour/hanquoc/seoul/seoul1.jpg'),
+(2, 4, 'anhtour/hanquoc/seoul/seoul2.jpg'),
+(3, 4, 'anhtour/hanquoc/seoul/seoul3.jpg'),
+(4, 4, 'anhtour/hanquoc/seoul/seoul4.jpg'),
+(5, 4, 'anhtour/hanquoc/seoul/seoul5.jpg'),
+(6, 5, 'anhtour/trungquoc/backinh/backinh1.jpg'),
+(7, 5, 'anhtour/trungquoc/backinh/backinh2.jpg'),
+(8, 5, 'anhtour/trungquoc/backinh/backinh3.jpg'),
+(9, 5, 'anhtour/trungquoc/backinh/backinh4.jpg'),
+(10, 5, 'anhtour/trungquoc/backinh/backinh5.jpg'),
+(11, 5, 'anhtour/trungquoc/backinh/backinh6.jpg'),
+(23, 1, 'anhtour/vietnam/mienbac/yenbai/yenbai1.jpg'),
+(24, 1, 'anhtour/vietnam/mienbac/yenbai/yenbai2.jpg'),
+(25, 1, 'anhtour/vietnam/mienbac/yenbai/yenbai3.jpg'),
+(26, 1, 'anhtour/vietnam/mienbac/yenbai/yenbai4.jpg'),
+(27, 1, 'anhtour/vietnam/mienbac/yenbai/yenbai5.jpg'),
+(28, 1, 'anhtour/vietnam/mienbac/yenbai/yenbai6.jpg');
 
 -- --------------------------------------------------------
 
@@ -230,6 +281,13 @@ CREATE TABLE `khachhang` (
   `SoGiayTo` varchar(20) DEFAULT NULL,
   `NgayTao` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `khachhang`
+--
+
+INSERT INTO `khachhang` (`MaKhachHang`, `HoTen`, `GioiTinh`, `SoDienThoai`, `Email`, `DiaChi`, `SoGiayTo`, `NgayTao`) VALUES
+(1, 'aaaa', NULL, '0822501239', 'quangthai15901@gmail.com', '133113311331', NULL, '2025-11-21 14:49:02');
 
 -- --------------------------------------------------------
 
@@ -249,12 +307,19 @@ CREATE TABLE `lichkhoihanh` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Triggers `lichkhoihanh`
+-- Dumping data for table `lichkhoihanh`
 --
-DELIMITER $$
-CREATE TRIGGER `trg_Lich_Code` BEFORE INSERT ON `lichkhoihanh` FOR EACH ROW SET NEW.LichCode = CONCAT('LKH', YEAR(NEW.NgayKhoiHanh), LPAD(NEW.MaLichKhoiHanh, 5, '0'))
-$$
-DELIMITER ;
+
+INSERT INTO `lichkhoihanh` (`MaLichKhoiHanh`, `MaTour`, `LichCode`, `NgayKhoiHanh`, `GioTapTrung`, `DiaDiemTapTrung`, `TrangThai`, `SoKhachHienTai`) VALUES
+(1, 1, 'LKH202500001', '2025-11-26', '05:30:00', 'Nhà Hát Lớn, Hà Nội', 'Nhận khách', 2),
+(2, 1, 'LKH202500002', '2025-12-03', '05:30:00', 'Trung tâm Hội nghị Quốc gia', 'Nhận khách', 0),
+(3, 1, 'LKH202500003', '2025-12-10', '06:00:00', 'Sân bay Nội Bài (Sảnh E)', 'Nhận khách', 10),
+(4, 2, 'LKH202500004', '2025-11-28', '19:00:00', 'Ga Hà Nội (Cửa Lê Duẩn)', 'Nhận khách', 5),
+(5, 2, 'LKH202500005', '2025-12-05', '19:00:00', 'Ga Hà Nội (Cửa Trần Quý Cáp)', 'Nhận khách', 0),
+(6, 3, 'LKH202500006', '2025-11-24', '07:00:00', 'Sân bay Tân Sơn Nhất (Ga Quốc nội)', 'Sắp đóng', 28),
+(7, 3, 'LKH202500007', '2025-12-01', '08:30:00', 'Sân bay Nội Bài (Sảnh A)', 'Nhận khách', 0),
+(8, 4, 'LKH202500008', '2025-12-11', '22:00:00', 'Sân bay Nội Bài (Ga Quốc tế T2 - Cột 10)', 'Nhận khách', 15),
+(9, 5, 'LKH202500009', '2025-12-16', '09:00:00', 'Sân bay Tân Sơn Nhất (Ga Quốc tế)', 'Nhận khách', 5);
 
 -- --------------------------------------------------------
 
@@ -269,6 +334,15 @@ CREATE TABLE `lichtrinhtour` (
   `TieuDe` varchar(200) DEFAULT NULL,
   `NoiDung` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `lichtrinhtour`
+--
+
+INSERT INTO `lichtrinhtour` (`MaLichTrinh`, `MaTour`, `NgayThu`, `TieuDe`, `NoiDung`) VALUES
+(1, 1, 1, 'Hà Nội - Nghĩa Lộ', 'Xe đón đoàn khởi hành đi Nghĩa Lộ. Ăn trưa, nhận phòng.'),
+(2, 1, 2, 'Mù Cang Chải - Ruộng Bậc Thang', 'Tham quan đồi Mâm Xôi, chụp ảnh mùa lúa chín.'),
+(3, 1, 3, 'Tú Lệ - Hà Nội', 'Thưởng thức cốm Tú Lệ, mua quà và trở về Hà Nội.');
 
 -- --------------------------------------------------------
 
@@ -302,7 +376,7 @@ CREATE TABLE `nguoidung` (
   `TenDangNhap` varchar(50) NOT NULL,
   `MatKhau` varchar(255) NOT NULL,
   `HoTen` varchar(100) NOT NULL,
-  `VaiTro` enum('ADMIN','Nhân viên','HDV') NOT NULL,
+  `VaiTro` enum('ADMIN','KhachHang','HDV') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `MaNhanSu` int DEFAULT NULL,
   `Avatar` varchar(500) DEFAULT NULL,
   `TrangThai` varchar(50) DEFAULT 'Hoạt động'
@@ -313,7 +387,8 @@ CREATE TABLE `nguoidung` (
 --
 
 INSERT INTO `nguoidung` (`MaNguoiDung`, `TenDangNhap`, `MatKhau`, `HoTen`, `VaiTro`, `MaNhanSu`, `Avatar`, `TrangThai`) VALUES
-(1, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Quản trị viên', 'ADMIN', NULL, NULL, 'Hoạt động');
+(1, 'admin', '123456', 'Quản trị viên', 'ADMIN', NULL, NULL, 'Hoạt động'),
+(2, 'huongdanvien', '123456', 'Hướng dẫn viên', 'HDV', NULL, NULL, 'Hoạt động');
 
 -- --------------------------------------------------------
 
@@ -329,6 +404,16 @@ CREATE TABLE `nhansu` (
   `LoaiNhanSu` varchar(50) NOT NULL COMMENT 'HDV,Tài xế,Nhân viên',
   `TrangThai` varchar(50) DEFAULT 'Hoạt động'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `nhansu`
+--
+
+INSERT INTO `nhansu` (`MaNhanSu`, `HoTen`, `SoDienThoai`, `Email`, `LoaiNhanSu`, `TrangThai`) VALUES
+(1, 'Nguyễn Văn Hùng', '0988111222', 'hungnv@tourviet.com', 'HDV', 'Hoạt động'),
+(2, 'Trần Thị Mai', '0977333444', 'maitt@tourviet.com', 'HDV', 'Hoạt động'),
+(3, 'Lê Tuấn Anh', '0912555666', 'anhlt@tourviet.com', 'HDV', 'Hoạt động'),
+(4, 'Phạm Thùy Linh', '0909777888', 'linhpt@tourviet.com', 'HDV', 'Hoạt động');
 
 -- --------------------------------------------------------
 
@@ -368,12 +453,25 @@ CREATE TABLE `tour` (
   `MaTour` int NOT NULL,
   `MaLoaiTour` int NOT NULL,
   `TenTour` varchar(200) NOT NULL,
+  `HinhAnh` varchar(500) DEFAULT NULL,
   `MoTa` text,
   `SoNgay` int NOT NULL,
   `SoChoToiDa` int DEFAULT '40',
   `TrangThai` varchar(50) DEFAULT 'Hoạt động',
   `NgayTao` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `tour`
+--
+
+INSERT INTO `tour` (`MaTour`, `MaLoaiTour`, `TenTour`, `HinhAnh`, `MoTa`, `SoNgay`, `SoChoToiDa`, `TrangThai`, `NgayTao`) VALUES
+(1, 1, 'Khám phá Mù Cang Chải - Yên Bái', 'anhtour/vietnam/mienbac/yenbai/yenbai1.jpg', 'Ngắm ruộng bậc thang mùa lúa chín tuyệt đẹp.', 3, 20, 'Hoạt động', '2025-11-21 05:26:42'),
+(2, 1, 'Thám hiểm Hang Động Quảng Bình', 'anhtour/vietnam/mientrung/quangbinh/quangbinh1.jpg', 'Khám phá Phong Nha Kẻ Bàng và hang Sơn Đoòng.', 4, 15, 'Hoạt động', '2025-11-21 05:26:42'),
+(3, 1, 'Nghỉ dưỡng Đảo Ngọc Phú Quốc', 'anhtour/vietnam/miennam/phuquoc/phuquoc1.jpg', 'Tận hưởng bãi biển xanh ngát và VinWonders.', 3, 30, 'Hoạt động', '2025-11-21 05:26:42'),
+(4, 2, 'Mùa thu lá đỏ Seoul - Hàn Quốc', 'anhtour/hanquoc/seoul/seoul1.jpg', 'Tham quan đảo Nami, tháp Namsan và cung điện.', 5, 25, 'Hoạt động', '2025-11-21 05:26:42'),
+(5, 2, 'Vạn Lý Trường Thành - Bắc Kinh', 'anhtour/trungquoc/backinh/backinh1.jpg', 'Khám phá Tử Cấm Thành và văn hóa Trung Hoa.', 5, 25, 'Hoạt động', '2025-11-21 05:26:42'),
+(6, 3, 'Teambuilding Công ty ABC', 'anhtour/teambuilding/team1.jpg', 'Tour thiết kế riêng cho công ty tổng kết cuối năm.', 2, 100, 'Hoạt động', '2025-11-21 05:26:42');
 
 -- --------------------------------------------------------
 
@@ -382,13 +480,13 @@ CREATE TABLE `tour` (
 -- (See below for the actual view)
 --
 CREATE TABLE `v_baocaodoanhthu_thoigian` (
-`ChiPhi` decimal(40,2)
-,`DoanhThu` decimal(40,2)
-,`LoiNhuan` decimal(41,2)
-,`Nam` year
+`Nam` year
+,`Thang` int
 ,`Quy` int
 ,`SoDoan` bigint
-,`Thang` int
+,`DoanhThu` decimal(40,2)
+,`ChiPhi` decimal(40,2)
+,`LoiNhuan` decimal(41,2)
 );
 
 -- --------------------------------------------------------
@@ -398,12 +496,12 @@ CREATE TABLE `v_baocaodoanhthu_thoigian` (
 -- (See below for the actual view)
 --
 CREATE TABLE `v_baocaoloinhuan` (
-`ChiPhi` decimal(40,2)
-,`DoanhThu` decimal(40,2)
-,`LichCode` varchar(20)
-,`LoiNhuan` decimal(41,2)
-,`NgayKhoiHanh` date
+`LichCode` varchar(20)
 ,`TenTour` varchar(200)
+,`NgayKhoiHanh` date
+,`DoanhThu` decimal(40,2)
+,`ChiPhi` decimal(40,2)
+,`LoiNhuan` decimal(41,2)
 );
 
 -- --------------------------------------------------------
@@ -580,7 +678,7 @@ ALTER TABLE `yeucaudacbiet`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `MaBooking` int NOT NULL AUTO_INCREMENT;
+  MODIFY `MaBooking` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `checkinkhach`
@@ -610,7 +708,7 @@ ALTER TABLE `filedinhkem`
 -- AUTO_INCREMENT for table `giatour`
 --
 ALTER TABLE `giatour`
-  MODIFY `MaGia` int NOT NULL AUTO_INCREMENT;
+  MODIFY `MaGia` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `goidichvu`
@@ -622,25 +720,25 @@ ALTER TABLE `goidichvu`
 -- AUTO_INCREMENT for table `hinhanhtour`
 --
 ALTER TABLE `hinhanhtour`
-  MODIFY `MaHinhAnh` int NOT NULL AUTO_INCREMENT;
+  MODIFY `MaHinhAnh` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `khachhang`
 --
 ALTER TABLE `khachhang`
-  MODIFY `MaKhachHang` int NOT NULL AUTO_INCREMENT;
+  MODIFY `MaKhachHang` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `lichkhoihanh`
 --
 ALTER TABLE `lichkhoihanh`
-  MODIFY `MaLichKhoiHanh` int NOT NULL AUTO_INCREMENT;
+  MODIFY `MaLichKhoiHanh` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `lichtrinhtour`
 --
 ALTER TABLE `lichtrinhtour`
-  MODIFY `MaLichTrinh` int NOT NULL AUTO_INCREMENT;
+  MODIFY `MaLichTrinh` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `loaitour`
@@ -652,13 +750,13 @@ ALTER TABLE `loaitour`
 -- AUTO_INCREMENT for table `nguoidung`
 --
 ALTER TABLE `nguoidung`
-  MODIFY `MaNguoiDung` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `MaNguoiDung` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `nhansu`
 --
 ALTER TABLE `nhansu`
-  MODIFY `MaNhanSu` int NOT NULL AUTO_INCREMENT;
+  MODIFY `MaNhanSu` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `nhatkytour`
@@ -676,7 +774,7 @@ ALTER TABLE `phanbonhansu`
 -- AUTO_INCREMENT for table `tour`
 --
 ALTER TABLE `tour`
-  MODIFY `MaTour` int NOT NULL AUTO_INCREMENT;
+  MODIFY `MaTour` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `yeucaudacbiet`
