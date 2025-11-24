@@ -26,5 +26,15 @@ class BaseModel {
         return $stmt->fetch();
     }
     
+
     // Chúng ta sẽ thêm hàm create/update sau
+    public function insert($data) {
+    $columns = implode(", ", array_keys($data));
+    $placeholders = implode(", ", array_map(fn($key) => ":$key", array_keys($data)));
+
+    $sql = "INSERT INTO {$this->table} ($columns) VALUES ($placeholders)";
+    $stmt = $this->conn->prepare($sql);
+    return $stmt->execute($data);
+}
+
 }

@@ -23,7 +23,7 @@ class UserModel extends BaseModel {
             'MaNhanSu'    => null              // Cột này cho phép NULL nên ta để null
         ];
 
-        return $this->create($insertData);
+        return $this->insert($insertData);
     }
 
     // Lấy user để login
