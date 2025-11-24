@@ -78,10 +78,14 @@ class BookingModel extends BaseModel {
         return $stmt->fetch();
     }
 
-    // 7. Cập nhật trạng thái đơn hàng (Duyệt / Hủy / Đã thanh toán)
+    // 7. Cập nhật trạng thái đơn hàng (Duyệt / Hủy / Đã thanh toán)    
     public function updateStatus($id, $status) {
         $sql = "UPDATE booking SET TrangThai = :stt WHERE MaBooking = :id";
         $stmt = $this->conn->prepare($sql);
         return $stmt->execute(['stt' => $status, 'id' => $id]);
     }
 }
+//abc
+
+
+
