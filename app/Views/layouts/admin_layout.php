@@ -21,7 +21,6 @@
                         <i class="bi bi-calendar-check"></i> Lịch Khởi Hành
                     </a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link text-white" href="<?php echo BASE_URL; ?>/supplier/index">
                         <i class="bi bi-truck"></i> Nhà Cung Cấp
@@ -29,8 +28,13 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="#">
-                        <i class="bi bi-receipt"></i> Đơn Hàng
+                    <a class="nav-link text-white" href="<?php echo BASE_URL; ?>/booking/index">
+                        <i class="bi bi-receipt"></i> Quản lý Đơn Hàng
+                    </a>
+                </li>
+                <li class="nav-item mt-2"> <a class="nav-link text-warning fw-bold border border-warning rounded"
+                        href="<?php echo BASE_URL; ?>/booking/create">
+                        <i class="bi bi-plus-circle-fill"></i> Tạo Đơn Hàng
                     </a>
                 </li>
             </ul>

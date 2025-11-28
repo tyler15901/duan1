@@ -105,10 +105,12 @@ class ScheduleModel extends Model {
     }
     // --- LẤY CHI TIẾT LỊCH ---
     public function getScheduleById($id) {
-        $sql = "SELECT l.*, t.TenTour, t.SoNgay, t.MaTour 
+        // Bổ sung thêm t.SoChoToiDa vào dòng SELECT
+        $sql = "SELECT l.*, t.TenTour, t.SoNgay, t.MaTour, t.SoChoToiDa
                 FROM lichkhoihanh l 
                 JOIN tour t ON l.MaTour = t.MaTour 
                 WHERE l.MaLichKhoiHanh = :id";
+        
         $stmt = $this->conn->prepare($sql);
         $stmt->execute(['id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -204,6 +206,20 @@ class ScheduleModel extends Model {
         // Lệnh xóa này sẽ tự động xóa các dòng bên phan_bo_tai_nguyen và phanbonhansu
         $stmt = $this->conn->prepare("DELETE FROM lichkhoihanh WHERE MaLichKhoiHanh = ?");
         return $stmt->execute([$id]);
+    }
+
+    // --- LẤY DANH SÁCH KHÁCH (BOOKING) CỦA 1 LỊCH ---
+    public function getBookingsBySchedule($scheduleId) {
+        // Kết nối bảng Booking với bảng KhachHang để lấy tên và sđt
+        $sql = "SELECT b.*, kh.HoTen, kh.SoDienThoai, kh.Email 
+                FROM booking b 
+                JOIN khachhang kh ON b.MaKhachHang = kh.MaKhachHang 
+                WHERE b.MaLichKhoiHanh = :id 
+                ORDER BY b.NgayDat DESC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['id' => $scheduleId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>

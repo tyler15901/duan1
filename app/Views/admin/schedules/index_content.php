@@ -85,6 +85,11 @@
                         </td>
                         <td>
                             <div class="btn-group">
+                                <a href="<?php echo BASE_URL; ?>/schedule/guests/<?php echo $item['MaLichKhoiHanh']; ?>"
+                                    class="btn btn-sm btn-outline-primary" title="Danh sách khách">
+                                    <i class="bi bi-people-fill"></i>
+                                </a>
+
                                 <a href="<?php echo BASE_URL; ?>/schedule/show/<?php echo $item['MaLichKhoiHanh']; ?>"
                                     class="btn btn-sm btn-outline-info" title="Xem chi tiết"><i class="bi bi-eye"></i></a>
                                 <a href="<?php echo BASE_URL; ?>/schedule/edit/<?php echo $item['MaLichKhoiHanh']; ?>"
@@ -92,7 +97,7 @@
                                 <a href="<?php echo BASE_URL; ?>/schedule/delete/<?php echo $item['MaLichKhoiHanh']; ?>"
                                     class="btn btn-sm btn-outline-danger" title="Xóa"
                                     onclick="return confirm('Bạn có chắc muốn xóa lịch này?')"><i class="bi bi-trash"></i></a>
-                            </div>  
+                            </div>
                         </td>
                     </tr>
                 <?php endforeach; ?>

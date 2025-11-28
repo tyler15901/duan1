@@ -127,5 +127,33 @@ class ScheduleController extends Controller {
             echo "<script>alert('Không thể xóa lịch này vì đã có Booking phát sinh!'); window.location.href='".BASE_URL."/schedule/index';</script>";
         }
     }
+
+    // --- XEM DANH SÁCH KHÁCH CỦA LỊCH ---
+    public function guests($id) {
+        $model = $this->model('ScheduleModel');
+        
+        // 1. Lấy thông tin lịch (để hiện tiêu đề: Danh sách khách của lịch ABC...)
+        $schedule = $model->getScheduleById($id);
+        
+        // 2. Lấy danh sách booking của lịch này
+        $bookings = $model->getBookingsBySchedule($id);
+        
+        // 3. Tính tổng số khách thực tế
+        $total_guests = 0;
+        foreach($bookings as $b) {
+            // Chỉ tính những đơn đã xác nhận/thanh toán (tránh đơn hủy)
+            if($b['TrangThai'] != 'Đã hủy') {
+                $total_guests += $b['SoLuongKhach'];
+            }
+        }
+
+        $data = [
+            'schedule' => $schedule,
+            'bookings' => $bookings,
+            'total_guests' => $total_guests
+        ];
+
+        $this->view('admin/schedules/guests', $data);
+    }
 }
 ?>
