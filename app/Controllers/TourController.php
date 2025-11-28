@@ -1,6 +1,12 @@
 <?php
 class TourController extends Controller {
 
+    public function __construct() {
+        // Gọi hàm kiểm tra quyền ngay khi khởi tạo Controller
+        require_once '../app/Core/Auth.php';
+        Auth::checkAdmin();
+    }
+
     // 1. Hàm hiển thị danh sách (URL: /tour/index)
     public function index() {
         $tourModel = $this->model('TourModel');

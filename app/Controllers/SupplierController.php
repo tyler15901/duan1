@@ -1,6 +1,11 @@
 <?php
 class SupplierController extends Controller {
 
+    public function __construct() {
+        // Gọi hàm kiểm tra quyền ngay khi khởi tạo Controller
+        require_once '../app/Core/Auth.php';
+        Auth::checkAdmin();
+    }
     // Danh sách NCC
     public function index() {
         $model = $this->model('SupplierModel');

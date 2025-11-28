@@ -1,6 +1,11 @@
 <?php
 class BookingController extends Controller {
 
+    public function __construct() {
+        // Gọi hàm kiểm tra quyền ngay khi khởi tạo Controller
+        require_once '../app/Core/Auth.php';
+        Auth::checkAdmin();
+    }
     // Danh sách đơn hàng
     public function index() {
         $model = $this->model('BookingModel');

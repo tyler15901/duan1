@@ -37,6 +37,11 @@
                         <i class="bi bi-plus-circle-fill"></i> Tạo Đơn Hàng
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="<?php echo BASE_URL; ?>/staff/index">
+                        <i class="bi bi-person-badge"></i> Quản lý HDV
+                    </a>
+                </li>
             </ul>
         </div>
         <div class="p-4 w-100">
