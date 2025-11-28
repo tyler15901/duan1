@@ -1,25 +1,15 @@
 <?php
-// app/Core/Database.php
 class Database {
-    private static $pdo;
+    public $conn;
 
-    public static function connect() {
-        if (!self::$pdo) {
-            // Gọi cấu hình từ file config
-            // Lưu ý: Vì Database.php được require từ index.php, 
-            // nên các hằng số DB_HOST... đã có sẵn.
-            try {
-                $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
-                $options = [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false,
-                ];
-                self::$pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
-            } catch (PDOException $e) {
-                die("Lỗi kết nối Database: " . $e->getMessage());
-            }
+    public function __construct() {
+        try {
+            // Kết nối PDO sử dụng thông tin từ config.php
+            $this->conn = new PDO("mysql:host=".DB_HOST.";dbname=".DB_NAME.";charset=utf8", DB_USER, DB_PASS);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch(PDOException $e) {
+            die("Lỗi kết nối DB: " . $e->getMessage());
         }
-        return self::$pdo;
     }
 }
+?>

@@ -1,10 +1,9 @@
-<IfModule mod_rewrite.c>
-    Options -Multiviews
-    RewriteEngine On
-    RewriteBase /duan1/public/
-    
-    # Nếu không phải là file thật hoặc thư mục thật thì đẩy về index.php
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^(.+)$ index.php?url=$1 [QSA,L]
-</IfModule>
+Options -MultiViews
+RewriteEngine On
+
+# Chặn truy cập trực tiếp vào thư mục (bảo mật)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Chuyển tất cả request về index.php
+RewriteRule ^(.+)$ index.php?url=$1 [QSA,L]

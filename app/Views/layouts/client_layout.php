@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Booking - Du lịch bốn phương</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        .tour-card img { height: 200px; object-fit: cover; }
+        .tour-price { color: #d9534f; font-weight: bold; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="<?php echo BASE_URL; ?>">TOUR VIET</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="<?php echo BASE_URL; ?>">Trang chủ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Giới thiệu</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Liên hệ</a></li>
+                    <li class="nav-item ms-2"><a class="btn btn-warning text-dark btn-sm mt-1" href="<?php echo BASE_URL; ?>/tour/index">Admin Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4" style="min-height: 80vh;">
+        <?php require_once '../app/Views/' . $content_view . '.php'; ?>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-3 mt-4">
+        <p class="mb-0">&copy; 2025 Tour Booking System. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

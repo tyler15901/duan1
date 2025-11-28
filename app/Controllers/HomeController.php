@@ -4,46 +4,61 @@ class HomeController extends Controller {
     public function index() {
         $tourModel = $this->model('TourModel');
 
-        // 1. Lấy dữ liệu thô từ Model
-        $rawUuDai = $tourModel->getFeaturedTours(4);
-        $rawTrongNuoc = $tourModel->getToursByType(1, 8);
-        $rawQuocTe = $tourModel->getToursByType(2, 8);
-
-        // 2. Chuẩn hóa dữ liệu (Format tiền, Ảnh) ngay tại Controller
-        // View sẽ không phải làm việc này nữa
-        $data = [
-            'tourUuDai'     => $this->formatTours($rawUuDai),
-            'tourTrongNuoc' => $this->formatTours($rawTrongNuoc),
-            'tourQuocTe'    => $this->formatTours($rawQuocTe),
-            'title'         => 'Du Lịch Việt - Trang Chủ',
+        // 1. Nhận tham số tìm kiếm từ URL (nếu khách tìm)
+        $keyword = isset($_GET['q']) ? trim($_GET['q']) : '';
+        $cat_id = isset($_GET['cat']) ? (int)$_GET['cat'] : 0;
+        
+        // 2. Cấu hình bộ lọc
+        $filters = [
+            'keyword' => $keyword,
+            'category_id' => $cat_id,
+            'status' => 'Hoạt động' // Quan trọng: Chỉ hiện tour đang hoạt động
         ];
 
-        $this->view('home/index', $data);
+        // 3. Phân trang (mặc định 6 tour/trang)
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = 6;
+        $offset = ($page - 1) * $limit;
+
+        // 4. Lấy dữ liệu
+        // Lưu ý: Bạn cần vào TourModel sửa hàm getToursFiltered để nhận thêm tham số 'status' nhé!
+        // (Xem hướng dẫn sửa Model bên dưới)
+        $tours = $tourModel->getToursFiltered($filters, $limit, $offset);
+        $categories = $tourModel->getCategories();
+        
+        // Tính toán phân trang
+        $total_records = $tourModel->countTours($filters);
+        $total_pages = ceil($total_records / $limit);
+
+        $data = [
+            'tours' => $tours,
+            'categories' => $categories,
+            'keyword' => $keyword,
+            'cat_id' => $cat_id,
+            'pagination' => [
+                'current_page' => $page,
+                'total_pages' => $total_pages
+            ]
+        ];
+
+        // Gọi View Client
+        $this->view('client/home', $data);
     }
 
-    /**
-     * Hàm phụ: Xử lý dữ liệu tour trước khi gửi sang View
-     * (Logic này nằm ở Controller là chuẩn MVC)
-     */
-    private function formatTours($tours) {
-        foreach ($tours as &$tour) {
-            // 1. Xử lý ảnh: Tạo đường dẫn đầy đủ
-            $imgName = $tour['HinhAnh'] ?? '';
-            $tour['final_image'] = BASE_URL . 'uploads/' . $imgName;
+    // Trang chi tiết Tour (Xem thông tin + Lịch khởi hành)
+    public function detail($id) {
+        $tourModel = $this->model('TourModel');
+        $scheduleModel = $this->model('ScheduleModel'); // Cần dùng để hiện lịch chạy
 
-            // 2. Xử lý giá: Format sang VND
-            if (!empty($tour['GiaHienTai']) && $tour['GiaHienTai'] > 0) {
-                $tour['final_price'] = number_format($tour['GiaHienTai'], 0, ',', '.') . ' đ';
-            } else {
-                $tour['final_price'] = 'Liên hệ';
-            }
+        $data = [
+            'tour' => $tourModel->getTourById($id),
+            'gallery' => $tourModel->getGallery($id),
+            'schedules' => $scheduleModel->getAllSchedules($id), // Lấy lịch của tour này
+            'prices' => $tourModel->getPrices($id),
+            'schedule_detail' => $tourModel->getSchedule($id) // Lịch trình chi tiết (ngày 1, ngày 2)
+        ];
 
-            // 3. Xử lý Link chi tiết
-            $tour['detail_link'] = BASE_URL . 'tour/detail/' . $tour['MaTour'];
-            
-            // 4. Xử lý nhãn (Nếu chưa có thì mặc định là Hot)
-            $tour['label'] = $tour['TenLoai'] ?? 'Hot';
-        }
-        return $tours;
+        $this->view('client/detail', $data);
     }
 }
+?>

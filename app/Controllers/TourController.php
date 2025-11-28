@@ -1,104 +1,212 @@
 <?php
 class TourController extends Controller {
-    
-    /**
-     * 1. HIỂN THỊ DANH SÁCH TOUR (Trang /tour/list)
-     */
-    public function list() {
-        $tourModel = $this->model('TourModel');
 
+    // 1. Hàm hiển thị danh sách (URL: /tour/index)
+    public function index() {
+        $tourModel = $this->model('TourModel');
+        
         // 1. Lấy tham số từ URL
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $sort = $_GET['sort'] ?? 'newest';
-        $search = $_GET['q'] ?? '';
-        $perPage = 5; // Số tour mỗi trang
+        $cat_id = isset($_GET['cat']) ? (int)$_GET['cat'] : 0;
+        $keyword = isset($_GET['q']) ? trim($_GET['q']) : '';
 
-        // 2. Lấy dữ liệu từ Model
-        $tours = $tourModel->getToursPaginated($page, $perPage, $sort, $search);
-        $totalTours = $tourModel->countTotalTours($search);
-        $totalPages = ceil($totalTours / $perPage);
+        // 2. Cấu hình phân trang
+        $limit = 5; // Số tour trên 1 trang
+        $offset = ($page - 1) * $limit;
 
-        // 3. Xử lý hiển thị (Format tiền, Ảnh)
-        foreach ($tours as &$t) {
-            $t['final_price'] = (!empty($t['GiaHienTai']) && $t['GiaHienTai'] > 0) 
-                                ? number_format($t['GiaHienTai'], 0, ',', '.') . ' ₫' 
-                                : 'Liên hệ';
-            $t['img_url'] = BASE_URL . 'uploads/' . ($t['HinhAnh'] ?? '');
-            $t['detail_link'] = BASE_URL . 'tour/detail/' . $t['MaTour'];
-        }
+        // 3. Chuẩn bị bộ lọc
+        $filters = [
+            'category_id' => $cat_id,
+            'keyword' => $keyword
+        ];
 
-        // 4. Gửi sang View
-        $this->view('tour/list', [
+        // 4. Gọi Model lấy dữ liệu
+        $tours = $tourModel->getToursFiltered($filters, $limit, $offset);
+        $total_records = $tourModel->countTours($filters);
+        $total_pages = ceil($total_records / $limit);
+        $categories = $tourModel->getCategories(); // Lấy danh mục để đổ vào dropdown
+
+        // 5. Gửi dữ liệu sang View
+        $data = [
             'tours' => $tours,
-            'totalTours' => $totalTours,
-            'currentPage' => $page,
-            'totalPages' => $totalPages,
-            'sort' => $sort,
-            'search' => $search,
-            'title' => 'Danh Sách Tour - Du Lịch Việt'
-        ]);
+            'categories' => $categories,
+            'pagination' => [
+                'current_page' => $page,
+                'total_pages' => $total_pages,
+                'cat_id' => $cat_id, // Gửi lại để giữ trạng thái filter
+                'keyword' => $keyword
+            ]
+        ];
+        
+        $this->view('admin/tours/index', $data);
     }
 
-    /**
-     * 2. HIỂN THỊ CHI TIẾT TOUR (Trang /tour/detail/ID)
-     */
-    public function detail($id = null) {
-        if (!$id) { header('Location: ' . BASE_URL); exit; }
-
+    // 2. Hàm hiển thị Form thêm mới (URL: /tour/create)
+    public function create() {
         $tourModel = $this->model('TourModel');
-        $tour = $tourModel->getTourDetail($id);
+        // Lấy danh mục để đổ vào thẻ select trong form
+        $categories = $tourModel->getCategories();
         
-        if (!$tour) die("Tour không tồn tại!"); 
+        // Gọi view hiển thị form (file create.php mà bạn đã tạo)
+        $this->view('admin/tours/create', ['categories' => $categories]);
+    }
 
-        // --- 1. XỬ LÝ DỮ LIỆU TOUR (Chuẩn bị cho View) ---
-        // Format giá tiền
-        $tour['formatted_price'] = (!empty($tour['GiaHienTai'])) ? number_format($tour['GiaHienTai'], 0, ',', '.') . ' đ' : 'Liên hệ';
-        
-        // Xử lý Gallery: Tạo mảng đường dẫn đầy đủ
-        $tour['gallery_urls'] = [];
-        if (!empty($tour['gallery'])) {
-            foreach ($tour['gallery'] as $img) {
-                $tour['gallery_urls'][] = BASE_URL . 'uploads/' . $img;
+    // 3. Hàm xử lý khi bấm nút Lưu (URL: /tour/store)
+    // Form action sẽ trỏ về đây: action=".../tour/store"
+    public function store() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $tourModel = $this->model('TourModel');
+
+            // --- XỬ LÝ ẢNH ĐẠI DIỆN ---
+            $thumbName = "";
+            if (!empty($_FILES['hinhanh']['name'])) {
+                $thumbName = time() . '_' . $_FILES['hinhanh']['name'];
+                move_uploaded_file($_FILES['hinhanh']['tmp_name'], '../public/assets/uploads/' . $thumbName);
             }
+
+            // --- GOM DỮ LIỆU CƠ BẢN ---
+            $dataTour = [
+                'TenTour' => $_POST['ten_tour'],
+                'MaLoaiTour' => $_POST['loai_tour'],
+                'HinhAnh' => $thumbName,
+                'SoNgay' => $_POST['so_ngay'],
+                'SoChoToiDa' => $_POST['so_cho'],
+                'MoTa' => $_POST['mo_ta'],
+                'ChinhSach' => isset($_POST['chinh_sach']) ? $_POST['chinh_sach'] : '',
+                'TrangThai' => 'Hoạt động'
+            ];
+
+            // --- GỌI MODEL TẠO TOUR ---
+            $newTourId = $tourModel->createTour($dataTour);
+
+            if ($newTourId) {
+                // A. Lưu lịch trình
+                if (isset($_POST['schedule']) && is_array($_POST['schedule'])) {
+                    foreach ($_POST['schedule'] as $index => $day) {
+                        // Kiểm tra nếu có tiêu đề mới lưu
+                        if(!empty($day['title'])) {
+                            $tourModel->addSchedule($newTourId, $index + 1, $day['title'], $day['content']);
+                        }
+                    }
+                }
+
+                // B. Lưu giá (vào bảng giatour)
+                if (!empty($_POST['gia_nguoi_lon'])) {
+                    $tourModel->addPrice($newTourId, 'Người lớn', $_POST['gia_nguoi_lon']);
+                }
+                if (!empty($_POST['gia_tre_em'])) {
+                    $tourModel->addPrice($newTourId, 'Trẻ em', $_POST['gia_tre_em']);
+                }
+
+                // C. Lưu Gallery ảnh
+                if (isset($_FILES['gallery']) && !empty($_FILES['gallery']['name'][0])) {
+                    $count = count($_FILES['gallery']['name']);
+                    for ($i = 0; $i < $count; $i++) {
+                        if ($_FILES['gallery']['error'][$i] == 0) {
+                            $galName = time() . '_' . $i . '_' . $_FILES['gallery']['name'][$i];
+                            move_uploaded_file($_FILES['gallery']['tmp_name'][$i], '../public/assets/uploads/' . $galName);
+                            $tourModel->addGalleryImage($newTourId, $galName);
+                        }
+                    }
+                }
+
+                // Lưu xong thì quay về trang danh sách
+                header("Location: " . BASE_URL . "/tour/index");
+                exit;
+            } else {
+                echo "Lỗi: Không thể tạo tour!";
+            }
+        }
+    }
+
+    // 4. XEM CHI TIẾT (URL: /tour/show/1)
+    public function show($id) {
+        $tourModel = $this->model('TourModel');
+        $data = [
+            'tour' => $tourModel->getTourById($id),
+            'gallery' => $tourModel->getGallery($id),
+            'schedule' => $tourModel->getSchedule($id),
+            'prices' => $tourModel->getPrices($id)
+        ];
+        $this->view('admin/tours/show', $data);
+    }
+
+    // 5. HIỂN THỊ FORM SỬA (URL: /tour/edit/1)
+    public function edit($id) {
+        $tourModel = $this->model('TourModel');
+        $data = [
+            'tour' => $tourModel->getTourById($id),
+            'categories' => $tourModel->getCategories(),
+            'schedule' => $tourModel->getSchedule($id),
+            'prices' => $tourModel->getPrices($id) // Lấy giá để hiển thị lại nếu cần
+        ];
+        $this->view('admin/tours/edit', $data);
+    }
+
+    // 6. XỬ LÝ CẬP NHẬT (URL: /tour/update/1)
+    public function update($id) {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $tourModel = $this->model('TourModel');
+
+            // --- XỬ LÝ ẢNH ĐẠI DIỆN MỚI (NẾU CÓ) ---
+            $thumbName = "";
+            if (!empty($_FILES['hinhanh']['name'])) {
+                $thumbName = time() . '_' . $_FILES['hinhanh']['name'];
+                move_uploaded_file($_FILES['hinhanh']['tmp_name'], '../public/assets/uploads/' . $thumbName);
+            }
+
+            // --- GOM DỮ LIỆU ---
+            $dataTour = [
+                'TenTour' => $_POST['ten_tour'],
+                'MaLoaiTour' => $_POST['loai_tour'],
+                'SoNgay' => $_POST['so_ngay'],
+                'SoChoToiDa' => $_POST['so_cho'],
+                'MoTa' => $_POST['mo_ta'],
+                'ChinhSach' => $_POST['chinh_sach'],
+                'TrangThai' => $_POST['trang_thai']
+            ];
+            if($thumbName) $dataTour['HinhAnh'] = $thumbName;
+
+            // --- CẬP NHẬT TOUR ---
+            if ($tourModel->updateTour($id, $dataTour)) {
+                
+                // A. Cập nhật Lịch trình (Xóa cũ - Thêm mới cho nhanh gọn)
+                if (isset($_POST['schedule']) && is_array($_POST['schedule'])) {
+                    $tourModel->resetSchedule($id); // Xóa hết cái cũ
+                    foreach ($_POST['schedule'] as $index => $day) {
+                        if(!empty($day['title'])) {
+                            $tourModel->addSchedule($id, $index + 1, $day['title'], $day['content']);
+                        }
+                    }
+                }
+
+                // B. Thêm ảnh Gallery mới (Ảnh cũ vẫn giữ nguyên)
+                if (isset($_FILES['gallery']) && !empty($_FILES['gallery']['name'][0])) {
+                    $count = count($_FILES['gallery']['name']);
+                    for ($i = 0; $i < $count; $i++) {
+                        if ($_FILES['gallery']['error'][$i] == 0) {
+                            $galName = time() . '_' . $i . '_' . $_FILES['gallery']['name'][$i];
+                            move_uploaded_file($_FILES['gallery']['tmp_name'][$i], '../public/assets/uploads/' . $galName);
+                            $tourModel->addGalleryImage($id, $galName);
+                        }
+                    }
+                }
+                
+                // Cập nhật xong về trang chi tiết
+                header("Location: " . BASE_URL . "/tour/show/" . $id);
+            }
+        }
+    }
+
+    // 7. XÓA TOUR (URL: /tour/delete/1)
+    public function delete($id) {
+        $tourModel = $this->model('TourModel');
+        if ($tourModel->deleteTour($id)) {
+            header("Location: " . BASE_URL . "/tour/index");
         } else {
-            // Nếu không có ảnh, dùng ảnh bìa
-            $tour['gallery_urls'][] = BASE_URL . 'uploads/' . ($tour['HinhAnh'] ?? '');
+            // Nếu không xóa được (do dính khóa ngoại với bảng LichKhoiHanh/Booking)
+            echo "<script>alert('Không thể xóa Tour này vì đang có Lịch khởi hành hoặc Đơn hàng liên quan! Hãy xóa lịch trình trước.'); window.location.href='".BASE_URL."/tour/index';</script>";
         }
-        // Ảnh chính đầu tiên
-        $tour['main_image'] = $tour['gallery_urls'][0] ?? 'https://placehold.co/800x500';
-
-
-        // --- 2. XỬ LÝ LỊCH KHỞI HÀNH ---
-        $schedules = $tourModel->getSchedules($id);
-        foreach ($schedules as &$lich) {
-            // Format ngày đi (VD: 15/04)
-            $lich['display_date'] = date('d/m', strtotime($lich['NgayKhoiHanh']));
-            
-            // Tính chỗ trống
-            $conCho = $tour['SoChoToiDa'] - $lich['SoKhachHienTai'];
-            $lich['remaining_seats'] = max(0, $conCho);
-            $lich['is_full'] = ($conCho <= 0);
-            $lich['class_status'] = ($conCho <= 0) ? 'disabled' : '';
-        }
-
-        // --- 3. XỬ LÝ TOUR LIÊN QUAN ---
-        $relatedTours = $tourModel->getRelatedTours($id, $tour['MaLoaiTour'], 4);
-        foreach ($relatedTours as &$r) {
-            $r['img_url'] = BASE_URL . 'uploads/' . ($r['HinhAnh'] ?? '');
-            $r['price_show'] = (!empty($r['GiaHienTai'])) ? number_format($r['GiaHienTai'], 0, ',', '.') . ' đ' : 'Liên hệ';
-            $r['link'] = BASE_URL . 'tour/detail/' . $r['MaTour'];
-        }
-
-        // Lấy lịch trình (không cần xử lý nhiều)
-        $itinerary = $tourModel->getItinerary($id);
-
-        // Gửi sang View
-        $this->view('tour/detail', [
-            'tour' => $tour,
-            'itinerary' => $itinerary,
-            'schedules' => $schedules,
-            'relatedTours' => $relatedTours,
-            'title' => $tour['TenTour'] . ' - Chi tiết'
-        ]);
     }
 }
+?>
