@@ -23,7 +23,6 @@
                     <li class="nav-item"><a class="nav-link active" href="<?php echo BASE_URL; ?>">Trang chủ</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Giới thiệu</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Liên hệ</a></li>
-                    <li class="nav-item ms-2"><a class="btn btn-warning text-dark btn-sm mt-1" href="<?php echo BASE_URL; ?>/tour/index">Admin Login</a></li>
                 </ul>
             </div>
         </div>

@@ -9,22 +9,20 @@ class ReportController extends Controller {
     public function index() {
         $model = $this->model('ReportModel');
 
-        // Lấy tham số lọc thời gian
+        // Lọc theo tháng/năm
         $month = isset($_GET['month']) ? $_GET['month'] : date('m');
         $year = isset($_GET['year']) ? $_GET['year'] : date('Y');
 
-        // Lấy dữ liệu bảng chi tiết
+        // Lấy danh sách chi tiết từng tour
         $profitData = $model->getProfitBySchedule($month, $year);
 
-        // Lấy dữ liệu biểu đồ
+        // Lấy dữ liệu biểu đồ tổng quan (vẫn hiển thị để so sánh)
         $chartDataRaw = $model->getRevenueByTime();
+        $chartDataRaw = array_reverse($chartDataRaw);
         
-        // Chuẩn bị JSON cho Chart.js
-        $chartLabels = [];
-        $chartRevenue = [];
-        $chartProfit = [];
+        $chartLabels = []; $chartRevenue = []; $chartProfit = [];
         foreach($chartDataRaw as $row) {
-            $chartLabels[] = "Tháng " . $row['Thang'] . "/" . $row['Nam'];
+            $chartLabels[] = "T" . $row['Thang'];
             $chartRevenue[] = $row['DoanhThu'];
             $chartProfit[] = $row['LoiNhuan'];
         }

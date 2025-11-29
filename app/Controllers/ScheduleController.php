@@ -11,24 +11,46 @@ class ScheduleController extends Controller
     {
         $model = $this->model('ScheduleModel');
 
-        // 1. Lấy tour_id từ URL (nếu có)
-        $tour_id = isset($_GET['tour_id']) ? $_GET['tour_id'] : null;
+        // 1. Nhận tham số từ URL
+        $tour_id = isset($_GET['tour_id']) ? $_GET['tour_id'] : null; // Lọc theo tour
+        $keyword = isset($_GET['q']) ? trim($_GET['q']) : '';         // Tìm kiếm từ khóa
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;       // Trang hiện tại
+        if ($page < 1) $page = 1;
 
-        // 2. Gọi Model lấy danh sách (đã lọc hoặc lấy hết)
-        $schedules = $model->getAllSchedules($tour_id);
+        // 2. Cấu hình phân trang
+        $limit = 10; // Số dòng trên 1 trang
+        $offset = ($page - 1) * $limit;
 
-        // 3. Lấy tên tour để hiển thị thông báo (nếu đang lọc)
+        // 3. Chuẩn bị bộ lọc để gửi xuống Model
+        $filters = [
+            'tour_id' => $tour_id,
+            'keyword' => $keyword
+        ];
+
+        // 4. Gọi Model lấy dữ liệu phân trang
+        // Lưu ý: Bạn cần cập nhật ScheduleModel để có 2 hàm này
+        $schedules = $model->getSchedulesFiltered($filters, $limit, $offset); 
+        $total_records = $model->countSchedules($filters);
+        $total_pages = ceil($total_records / $limit);
+
+        // 5. Lấy tên tour để hiển thị thông báo (nếu đang lọc)
         $filter_title = "";
         if ($tour_id) {
             $tourName = $model->getTourName($tour_id);
             $filter_title = "Đang hiển thị lịch của tour: " . $tourName;
         }
 
-        // 4. Truyền dữ liệu sang View
+        // 6. Truyền dữ liệu sang View
         $data = [
             'schedules' => $schedules,
-            'filter_msg' => $filter_title, // Biến thông báo
-            'current_tour_id' => $tour_id  // Để giữ trạng thái form tìm kiếm nếu cần
+            'filter_msg' => $filter_title,
+            'pagination' => [
+                'current_page' => $page,
+                'total_pages' => $total_pages,
+                'total_records' => $total_records,
+                'tour_id' => $tour_id, // Giữ lại ID tour để khi chuyển trang không bị mất lọc
+                'keyword' => $keyword  // Giữ lại từ khóa tìm kiếm
+            ]
         ];
 
         $this->view('admin/schedules/index', $data);

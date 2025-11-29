@@ -1,169 +1,184 @@
-<h2 class="mb-4">Tạo Đơn Hàng Mới</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary fw-bold">Tạo Đơn Hàng Mới</h2>
+    <a href="<?php echo BASE_URL; ?>/booking/index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+</div>
 
-<form action="<?php echo BASE_URL; ?>/booking/store" method="POST" id="bookingForm">
+<form action="<?php echo BASE_URL; ?>/booking/store" method="POST" id="bookingForm" class="needs-validation" novalidate>
     <div class="row">
-        
-        <div class="col-md-6">
-            <div class="card mb-4 border-primary">
-                <div class="card-header bg-primary text-white fw-bold">1. Chọn Sản phẩm</div>
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 border-bottom-0">
+                    <h5 class="mb-0 text-primary fw-bold"><i class="bi bi-info-circle"></i> 1. Thông tin Tour & Lịch trình</h5>
+                </div>
                 <div class="card-body">
-                    
-                    <div class="mb-3">
-                        <label class="fw-bold">Chọn Tour (*)</label> 
-                        <span class="float-end"><a href="<?php echo BASE_URL; ?>/tour/create" target="_blank" class="text-decoration-none small"><i class="bi bi-plus-circle"></i> Tạo Tour Mới (Case 3)</a></span>
-                        
-                        <select name="tour_id" id="tour_select" class="form-select" required onchange="loadSchedules()">
-                            <option value="">-- Vui lòng chọn Tour --</option>
-                            <?php foreach($tours as $t): ?>
-                                <option value="<?php echo $t['MaTour']; ?>"><?php echo $t['TenTour']; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <small class="text-muted fst-italic">Nếu là Tour mới, hãy bấm link 'Tạo Tour Mới' ở trên, sau đó F5 lại trang này.</small>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="fw-bold">Chọn Lịch Khởi Hành (*)</label>
-                        <div class="input-group">
-                            <select name="lich_id" id="schedule_select" class="form-select" required disabled>
-                                <option value="">-- Chọn Tour trước --</option>
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Chọn Tour <span class="text-danger">*</span></label>
+                            <select name="tour_id" id="tour_select" class="form-select form-select-lg" required onchange="loadSchedules()">
+                                <option value="">-- Tìm kiếm và chọn Tour --</option>
+                                <?php foreach($tours as $t): ?>
+                                    <option value="<?php echo $t['MaTour']; ?>"><?php echo $t['TenTour']; ?></option>
+                                <?php endforeach; ?>
                             </select>
-                            <button class="btn btn-outline-secondary" type="button" onclick="loadSchedules()" title="Tải lại danh sách lịch">
-                                <i class="bi bi-arrow-clockwise"></i>
-                            </button>
+                            <div class="form-text">
+                                Không thấy tour? <a href="<?php echo BASE_URL; ?>/tour/create" target="_blank">Tạo Tour mới</a> rồi tải lại trang.
+                            </div>
                         </div>
-                        
-                        <div id="create_schedule_link" class="mt-2 d-none">
-                            <span class="text-danger"><i class="bi bi-exclamation-circle"></i> Chưa có lịch phù hợp?</span>
-                            <a href="#" id="btn_new_schedule" target="_blank" class="fw-bold">
-                                <i class="bi bi-plus-lg"></i> Tạo lịch mới cho tour này
-                            </a>
+
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Chọn Ngày Khởi Hành <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <select name="lich_id" id="schedule_select" class="form-select" required disabled>
+                                    <option value="">-- Vui lòng chọn Tour trước --</option>
+                                </select>
+                                <button class="btn btn-light border" type="button" onclick="loadSchedules()" title="Tải lại">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </div>
+                            <div id="schedule_message" class="mt-2"></div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div id="schedule_info" class="alert alert-info d-none">
-                        <strong>Trạng thái:</strong> <span id="info_status"></span> <br>
-                        <strong>Còn trống:</strong> <span id="info_slots" class="fw-bold text-danger"></span> chỗ
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 border-bottom-0">
+                    <h5 class="mb-0 text-success fw-bold"><i class="bi bi-people"></i> 2. Thông tin Khách hàng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Số điện thoại <span class="text-danger">*</span></label>
+                            <input type="text" name="so_dien_thoai" class="form-control" required placeholder="09xxx...">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Họ và tên <span class="text-danger">*</span></label>
+                            <input type="text" name="ho_ten" class="form-control" required placeholder="Nguyễn Văn A">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Số lượng khách <span class="text-danger">*</span></label>
+                            <input type="number" name="so_luong" id="pax_count" class="form-control" value="1" min="1" required>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card mb-4 border-success">
-                <div class="card-header bg-success text-white fw-bold">2. Thông tin Khách hàng</div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="fw-bold">Số điện thoại (*)</label>
-                        <input type="text" name="so_dien_thoai" class="form-control" required placeholder="Nhập SĐT để tìm hoặc tạo mới">
-                    </div>
-                    <div class="mb-3">
-                        <label class="fw-bold">Họ và tên (*)</label>
-                        <input type="text" name="ho_ten" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="fw-bold">Số lượng khách (*)</label>
-                        <input type="number" name="so_luong" id="pax_count" class="form-control" value="1" min="1" required>
-                    </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4 bg-light">
+                <div class="card-header bg-warning bg-opacity-10 py-3 border-bottom-0">
+                    <h5 class="mb-0 text-warning text-dark fw-bold"><i class="bi bi-wallet2"></i> 3. Thanh toán</h5>
                 </div>
-            </div>
-
-            <div class="card mb-4 border-warning">
-                <div class="card-header bg-warning text-dark fw-bold">3. Thanh toán</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="fw-bold">Tổng tiền (VNĐ)</label>
-                        <input type="number" name="tong_tien" class="form-control" required placeholder="Nhập số tiền...">
+                        <label class="form-label fw-bold">Tổng tiền (VNĐ)</label>
+                        <input type="text" id="display_money" class="form-control form-control-lg fw-bold text-primary" placeholder="0" onkeyup="formatCurrency(this)">
+                        <input type="hidden" name="tong_tien" id="real_money">
+                        <div class="form-text small">Nhập số tiền, hệ thống tự thêm dấu phẩy.</div>
                     </div>
-                    <div class="mb-3">
-                        <label class="fw-bold">Trạng thái thanh toán</label>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Trạng thái TT</label>
                         <select name="trang_thai_tt" class="form-select">
                             <option value="Chưa thanh toán">Chưa thanh toán</option>
-                            <option value="Đã cọc">Đã đặt cọc (50%)</option>
+                            <option value="Đã cọc">Đã đặt cọc</option>
                             <option value="Đã thanh toán">Đã thanh toán hết</option>
                         </select>
                     </div>
+                    
+                    <hr>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 shadow">
+                        <i class="bi bi-check-lg"></i> Xác nhận Đặt Tour
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
-
-    <hr>
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <a href="<?php echo BASE_URL; ?>/booking/index" class="btn btn-secondary me-md-2">Hủy bỏ</a>
-        <button type="submit" class="btn btn-primary btn-lg px-5">Xác nhận tạo đơn</button>
     </div>
 </form>
 
 <script>
+    // Hàm format tiền tệ (Hiển thị 1,000,000)
+    function formatCurrency(input) {
+        // Xóa mọi ký tự không phải số
+        let value = input.value.replace(/\D/g, '');
+        // Cập nhật giá trị thực vào input hidden
+        document.getElementById('real_money').value = value;
+        // Format lại hiển thị
+        input.value = new Intl.NumberFormat('vi-VN').format(value);
+    }
+
     function loadSchedules() {
         const tourId = document.getElementById('tour_select').value;
         const scheduleSelect = document.getElementById('schedule_select');
-        const createLinkDiv = document.getElementById('create_schedule_link');
-        const btnNewSchedule = document.getElementById('btn_new_schedule');
-        const infoDiv = document.getElementById('schedule_info');
+        const messageDiv = document.getElementById('schedule_message');
 
-        // Reset
-        scheduleSelect.innerHTML = '<option value="">Đang tải...</option>';
+        // Reset UI Loading
+        scheduleSelect.innerHTML = '<option value="">Đang tải dữ liệu...</option>';
         scheduleSelect.disabled = true;
-        createLinkDiv.classList.add('d-none');
-        infoDiv.classList.add('d-none');
+        messageDiv.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Đang tìm lịch...';
 
         if (!tourId) {
-            scheduleSelect.innerHTML = '<option value="">-- Chọn Tour trước --</option>';
+            scheduleSelect.innerHTML = '<option value="">-- Vui lòng chọn Tour trước --</option>';
+            messageDiv.innerHTML = '';
             return;
         }
 
-        // Cập nhật link tạo lịch mới (Case 2)
-        // Link này sẽ mở tab mới đến trang tạo lịch, với tour_id đã chọn sẵn
-        // Lưu ý: Logic này giả định bạn có thể truyền tour_id qua URL ở trang Create Schedule (cần chỉnh sửa trang đó xíu nếu muốn tự động chọn)
-        btnNewSchedule.href = "<?php echo BASE_URL; ?>/schedule/create?tour_id=" + tourId;
-        createLinkDiv.classList.remove('d-none');
-
-        // Gọi AJAX
+        // Fetch Data
         fetch('<?php echo BASE_URL; ?>/booking/get_schedules?tour_id=' + tourId)
             .then(response => response.json())
             .then(data => {
                 scheduleSelect.innerHTML = '<option value="">-- Chọn ngày khởi hành --</option>';
                 
                 if (data.length > 0) {
+                    messageDiv.innerHTML = ''; // Clear loading
                     data.forEach(item => {
                         const slotsLeft = item.SoChoToiDa - item.SoKhachHienTai;
-                        // Format ngày
                         const dateStr = new Date(item.NgayKhoiHanh).toLocaleDateString('vi-VN');
-                        
                         const option = document.createElement('option');
-                        option.value = item.MaLichKhoiHanh;
-                        option.text = `${item.LichCode} - Khởi hành: ${dateStr} (Còn ${slotsLeft} chỗ)`;
                         
-                        // Lưu data vào attribute để dùng sau
+                        option.value = item.MaLichKhoiHanh;
+                        option.text = `[${dateStr}] - ${item.LichCode} (Còn ${slotsLeft} chỗ)`;
                         option.setAttribute('data-slots', slotsLeft);
                         
+                        if (slotsLeft <= 0) {
+                            option.disabled = true;
+                            option.text += ' - HẾT CHỖ';
+                        }
+
                         scheduleSelect.add(option);
                     });
                     scheduleSelect.disabled = false;
                 } else {
-                    scheduleSelect.innerHTML = '<option value="">Chưa có lịch cho tour này</option>';
+                    scheduleSelect.innerHTML = '<option value="">Không có lịch phù hợp</option>';
+                    // Hiển thị nút tạo lịch nhanh
+                    messageDiv.innerHTML = `
+                        <div class="alert alert-warning d-flex align-items-center mt-2 p-2">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <div>
+                                Tour này chưa có lịch khởi hành. 
+                                <a href="<?php echo BASE_URL; ?>/schedule/create?tour_id=${tourId}" target="_blank" class="fw-bold text-dark text-decoration-underline">Tạo lịch ngay</a>
+                            </div>
+                        </div>`;
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                messageDiv.innerHTML = '<span class="text-danger">Lỗi kết nối server!</span>';
+            });
     }
-
-    // Sự kiện khi chọn Lịch -> Hiện thông tin chỗ trống
+    
+    // Logic cập nhật max slot
     document.getElementById('schedule_select').addEventListener('change', function() {
-        const infoDiv = document.getElementById('schedule_info');
+        const messageDiv = document.getElementById('schedule_message');
         const selectedOption = this.options[this.selectedIndex];
         
         if (this.value) {
             const slots = selectedOption.getAttribute('data-slots');
-            document.getElementById('info_status').innerText = "Đang nhận khách";
-            document.getElementById('info_slots').innerText = slots;
-            infoDiv.classList.remove('d-none');
-            
-            // Validate số lượng khách nhập vào
-            const paxInput = document.getElementById('pax_count');
-            paxInput.max = slots; // Không cho nhập quá số chỗ còn lại
+            messageDiv.innerHTML = `<span class="badge bg-info text-dark">Lịch trình OK</span> <span class="text-success fw-bold">Còn ${slots} chỗ trống</span>`;
+            document.getElementById('pax_count').max = slots;
         } else {
-            infoDiv.classList.add('d-none');
+            messageDiv.innerHTML = '';
         }
     });
 </script>

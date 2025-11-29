@@ -138,8 +138,18 @@ class BookingModel extends Model {
         // Mã Booking Code sẽ được tạo tự động bằng PHP thay vì Trigger để an toàn hơn
         // Tuy nhiên ở bài trước đã fix Trigger rồi nên ta cứ insert bình thường để Trigger làm việc
         
-        $sql = "INSERT INTO booking (MaTour, MaLichKhoiHanh, MaKhachHang, SoLuongKhach, TongTien, TienCoc, TrangThai, TrangThaiThanhToan, NgayDat, GhiChu) 
-                VALUES (:tour, :lich, :khach, :sl, :tien, :coc, 'Đã xác nhận', :tt_thanhtoan, NOW(), :ghichu)";
+        $sql = "INSERT INTO booking (
+                    MaTour, MaLichKhoiHanh, MaKhachHang, 
+                    NgayKhoiHanh, -- Bổ sung cột này
+                    SoLuongKhach, TongTien, TienCoc, 
+                    TrangThai, TrangThaiThanhToan, NgayDat, GhiChu
+                ) 
+                VALUES (
+                    :tour, :lich, :khach, 
+                    (SELECT NgayKhoiHanh FROM lichkhoihanh WHERE MaLichKhoiHanh = :lich), -- Lấy ngày tự động
+                    :sl, :tien, :coc, 
+                    'Đã xác nhận', :tt_thanhtoan, NOW(), :ghichu
+                )";
         
         $stmt = $this->conn->prepare($sql);
         return $stmt->execute($data);
