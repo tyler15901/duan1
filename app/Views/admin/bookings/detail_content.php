@@ -31,20 +31,23 @@
                                 <div class="small text-muted"><?php echo $booking['Email']; ?></div>
                             </div>
                         </div>
-                        <p class="small text-muted mb-0"><i class="bi bi-geo-alt"></i> <?php echo $booking['DiaChi']; ?></p>
+                        <p class="small text-muted mb-0"><i class="bi bi-geo-alt"></i> <?php echo $booking['DiaChi']; ?>
+                        </p>
                     </div>
                     <div class="col-md-6 ps-md-4">
                         <h6 class="text-muted text-uppercase small fw-bold mb-3">Thông tin Tour</h6>
                         <h5 class="fw-bold text-primary mb-1"><?php echo $booking['TenTour']; ?></h5>
                         <div class="mb-2">
                             <span class="badge bg-light text-dark border">
-                                <i class="bi bi-calendar"></i> Khởi hành: <?php echo date('d/m/Y', strtotime($booking['NgayKhoiHanh'])); ?>
+                                <i class="bi bi-calendar"></i> Khởi hành:
+                                <?php echo date('d/m/Y', strtotime($booking['NgayKhoiHanh'])); ?>
                             </span>
                             <span class="badge bg-light text-dark border ms-1">
                                 <i class="bi bi-clock"></i> <?php echo $booking['SoNgay']; ?> ngày
                             </span>
                         </div>
-                        <a href="<?php echo BASE_URL; ?>/schedule/guests/<?php echo $booking['MaLichKhoiHanh']; ?>" class="text-decoration-none small fw-bold">
+                        <a href="<?php echo BASE_URL; ?>/schedule/guests/<?php echo $booking['MaLichKhoiHanh']; ?>"
+                            class="text-decoration-none small fw-bold">
                             <i class="bi bi-box-arrow-up-right"></i> Xem chi tiết lịch này
                         </a>
                     </div>
@@ -54,10 +57,12 @@
 
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold"><i class="bi bi-people"></i> Danh sách thành viên (<?php echo $booking['SoLuongKhach']; ?>)</h5>
-                
-                <?php if($booking['FileDanhSachKhach']): ?>
-                    <a href="<?php echo BASE_URL; ?>/assets/uploads/files/<?php echo $booking['FileDanhSachKhach']; ?>" class="btn btn-sm btn-success">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-people"></i> Danh sách thành viên
+                    (<?php echo $booking['SoLuongKhach']; ?>)</h5>
+
+                <?php if ($booking['FileDanhSachKhach']): ?>
+                    <a href="<?php echo BASE_URL; ?>/assets/uploads/files/<?php echo $booking['FileDanhSachKhach']; ?>"
+                        class="btn btn-sm btn-success">
                         <i class="bi bi-download"></i> Tải file khách
                     </a>
                 <?php endif; ?>
@@ -74,7 +79,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if(empty($guests)): ?>
+                        <?php if (empty($guests)): ?>
                             <tr>
                                 <td colspan="5" class="text-center py-4 text-muted">
                                     <em>Dữ liệu khách hàng chưa được cập nhật chi tiết.</em><br>
@@ -82,14 +87,16 @@
                                 </td>
                             </tr>
                         <?php else: ?>
-                            <?php foreach($guests as $k => $g): ?>
-                            <tr>
-                                <td><?php echo $k + 1; ?></td>
-                                <td class="fw-bold"><?php echo $g['HoTen']; ?></td>
-                                <td><span class="badge bg-info text-dark bg-opacity-25"><?php echo $g['LoaiKhach']; ?></span></td>
-                                <td class="font-monospace"><?php echo $g['SoGiayTo'] ?: '-'; ?></td>
-                                <td class="small text-muted"><?php echo $g['GhiChu'] ?: ''; ?></td>
-                            </tr>
+                            <?php foreach ($guests as $k => $g): ?>
+                                <tr>
+                                    <td><?php echo $k + 1; ?></td>
+                                    <td class="fw-bold"><?php echo $g['HoTen']; ?></td>
+                                    <td><span
+                                            class="badge bg-info text-dark bg-opacity-25"><?php echo $g['LoaiKhach']; ?></span>
+                                    </td>
+                                    <td class="font-monospace"><?php echo $g['SoGiayTo'] ?: '-'; ?></td>
+                                    <td class="small text-muted"><?php echo $g['GhiChu'] ?: ''; ?></td>
+                                </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </tbody>
@@ -104,23 +111,26 @@
                 <i class="bi bi-gear-fill"></i> Xử lý Đơn hàng
             </div>
             <div class="card-body">
-                <form action="<?php echo BASE_URL; ?>/booking/update/<?php echo $booking['MaBooking']; ?>" method="POST" enctype="multipart/form-data">
-                    
+                <form action="<?php echo BASE_URL; ?>/booking/update/<?php echo $booking['MaBooking']; ?>" method="POST"
+                    enctype="multipart/form-data">
+
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-uppercase text-muted">Trạng thái xử lý</label>
-                        <select name="trang_thai" class="form-select form-select-lg fw-bold <?php echo ($booking['TrangThai']=='Đã xác nhận') ? 'text-success border-success' : ''; ?>">
-                            <option value="Chờ xác nhận" <?php echo ($booking['TrangThai']=='Chờ xác nhận')?'selected':''; ?>>⏳ Chờ xác nhận</option>
-                            <option value="Đã xác nhận" <?php echo ($booking['TrangThai']=='Đã xác nhận')?'selected':''; ?>>✅ Đã xác nhận</option>
-                            <option value="Đã hủy" <?php echo ($booking['TrangThai']=='Đã hủy')?'selected':''; ?>>❌ Hủy đơn</option>
+                        <select name="trang_thai"
+                            class="form-select form-select-lg fw-bold <?php echo ($booking['TrangThai'] == 'Đã xác nhận') ? 'text-success border-success' : ''; ?>">
+                            <option value="Chờ xác nhận" <?php echo ($booking['TrangThai'] == 'Chờ xác nhận') ? 'selected' : ''; ?>>⏳ Chờ xác nhận</option>
+                            <option value="Đã xác nhận" <?php echo ($booking['TrangThai'] == 'Đã xác nhận') ? 'selected' : ''; ?>>✅ Đã xác nhận</option>
+                            <option value="Đã hủy" <?php echo ($booking['TrangThai'] == 'Đã hủy') ? 'selected' : ''; ?>>❌ Hủy
+                                đơn</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-uppercase text-muted">Thanh toán</label>
                         <select name="thanh_toan" class="form-select">
-                            <option value="Chưa thanh toán" <?php echo ($booking['TrangThaiThanhToan']=='Chưa thanh toán')?'selected':''; ?>>⚪ Chưa thanh toán</option>
-                            <option value="Đã cọc" <?php echo ($booking['TrangThaiThanhToan']=='Đã cọc')?'selected':''; ?>>🟡 Đã cọc</option>
-                            <option value="Đã thanh toán" <?php echo ($booking['TrangThaiThanhToan']=='Đã thanh toán')?'selected':''; ?>>🟢 Đã thanh toán (Full)</option>
+                            <option value="Chưa thanh toán" <?php echo ($booking['TrangThaiThanhToan'] == 'Chưa thanh toán') ? 'selected' : ''; ?>>⚪ Chưa thanh toán</option>
+                            <option value="Đã cọc" <?php echo ($booking['TrangThaiThanhToan'] == 'Đã cọc') ? 'selected' : ''; ?>>🟡 Đã cọc</option>
+                            <option value="Đã thanh toán" <?php echo ($booking['TrangThaiThanhToan'] == 'Đã thanh toán') ? 'selected' : ''; ?>>🟢 Đã thanh toán (Full)</option>
                         </select>
                     </div>
 
@@ -138,5 +148,30 @@
                 </form>
             </div>
         </div>
+        <div class="card shadow-sm border-0 mt-3 bg-light">
+    <div class="card-body">
+        <?php 
+            // Ép kiểu về float (số thực) để tránh lỗi NULL
+            $tongTien = (float)($booking['TongTien'] ?? 0);
+            $tienCoc  = (float)($booking['TienCoc'] ?? 0);
+            $conLai   = $tongTien - $tienCoc;
+        ?>
+        
+        <div class="d-flex justify-content-between mb-2">
+            <span>Tổng tiền tour:</span>
+            <strong class="text-primary fs-5"><?php echo number_format($tongTien); ?> đ</strong>
+        </div>
+        <div class="d-flex justify-content-between border-top pt-2">
+            <span>Đã đặt cọc:</span>
+            <strong class="text-warning"><?php echo number_format($tienCoc); ?> đ</strong>
+        </div>
+        <div class="d-flex justify-content-between mt-2">
+            <span>Còn lại:</span>
+            <strong class="text-danger">
+                <?php echo number_format($conLai); ?> đ
+            </strong>
+        </div>
+    </div>
+</div>
     </div>
 </div>

@@ -221,5 +221,104 @@ class ScheduleModel extends Model {
         $stmt->execute(['id' => $scheduleId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    // --- LẤY DANH SÁCH LỊCH (CÓ LỌC & PHÂN TRANG) ---
+    public function getSchedulesFiltered($filters = [], $limit = 10, $offset = 0) {
+        $sql = "SELECT l.*, t.TenTour, t.SoNgay, t.SoChoToiDa 
+                FROM lichkhoihanh l 
+                JOIN tour t ON l.MaTour = t.MaTour 
+                WHERE 1=1";
+
+        $params = [];
+
+        // 1. Lọc theo Tour ID (Khi bấm từ trang Tour sang)
+        if (!empty($filters['tour_id'])) {
+            $sql .= " AND l.MaTour = :tour_id";
+            $params['tour_id'] = $filters['tour_id'];
+        }
+
+        // 2. Tìm kiếm theo Mã lịch hoặc Tên tour
+        if (!empty($filters['keyword'])) {
+            $sql .= " AND (l.LichCode LIKE :kw OR t.TenTour LIKE :kw)";
+            $params['kw'] = '%' . $filters['keyword'] . '%';
+        }
+
+        // 3. Lọc theo ngày khởi hành (Nếu có)
+        if (!empty($filters['date'])) {
+            $sql .= " AND l.NgayKhoiHanh >= :date";
+            $params['date'] = $filters['date'];
+        }
+
+        // Sắp xếp: Ngày mới nhất lên đầu
+        $sql .= " ORDER BY l.NgayKhoiHanh DESC LIMIT $limit OFFSET $offset";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // --- ĐẾM TỔNG SỐ LỊCH (ĐỂ TÍNH SỐ TRANG) ---
+    public function countSchedules($filters = []) {
+        $sql = "SELECT COUNT(*) as total 
+                FROM lichkhoihanh l 
+                JOIN tour t ON l.MaTour = t.MaTour 
+                WHERE 1=1";
+        
+        $params = [];
+
+        if (!empty($filters['tour_id'])) {
+            $sql .= " AND l.MaTour = :tour_id";
+            $params['tour_id'] = $filters['tour_id'];
+        }
+
+        if (!empty($filters['keyword'])) {
+            $sql .= " AND (l.LichCode LIKE :kw OR t.TenTour LIKE :kw)";
+            $params['kw'] = '%' . $filters['keyword'] . '%';
+        }
+
+        if (!empty($filters['date'])) {
+            $sql .= " AND l.NgayKhoiHanh >= :date";
+            $params['date'] = $filters['date'];
+        }
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'];
+    }
+
+    // --- KIỂM TRA TÌNH TRẠNG BẬN CỦA HDV ---
+    public function getGuidesAvailability($startDate, $endDate, $excludeScheduleId = 0) {
+        // 1. Lấy danh sách ID của các HDV đang bận
+        // (Tức là đã được gán vào lịch khác có ngày chồng lấn với khoảng thời gian này)
+        $sqlBusy = "SELECT DISTINCT p.MaNhanSu 
+                    FROM phanbonhansu p
+                    JOIN lichkhoihanh l ON p.MaLichKhoiHanh = l.MaLichKhoiHanh
+                    WHERE l.TrangThai IN ('Nhận khách', 'Đang chuẩn bị', 'Đang chạy') -- Chỉ tính các lịch active
+                    AND l.MaLichKhoiHanh != :excludeId -- Trừ chính lịch đang sửa (nếu có)
+                    AND (
+                        (l.NgayKhoiHanh <= :end_date) AND (l.NgayKetThuc >= :start_date)
+                    )";
+        
+        $stmt = $this->conn->prepare($sqlBusy);
+        $stmt->execute([
+            'end_date' => $endDate,
+            'start_date' => $startDate,
+            'excludeId' => $excludeScheduleId
+        ]);
+        $busyIds = $stmt->fetchAll(PDO::FETCH_COLUMN); // Mảng [1, 5, ...]
+
+        // 2. Lấy tất cả HDV và đánh dấu ai bận
+        $allGuides = $this->conn->query("SELECT * FROM nhansu WHERE LoaiNhanSu='HDV'")->fetchAll(PDO::FETCH_ASSOC);
+        
+        $result = [];
+        foreach ($allGuides as $guide) {
+            $guide['is_busy'] = in_array($guide['MaNhanSu'], $busyIds);
+            $result[] = $guide;
+        }
+        
+        return $result;
+    }
+
+    
 }
 ?>

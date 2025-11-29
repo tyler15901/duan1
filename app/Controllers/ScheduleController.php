@@ -247,5 +247,24 @@ class ScheduleController extends Controller
         $model->deleteExpense($id);
         header("Location: " . BASE_URL . "/schedule/expenses/" . $scheduleId);
     }
+
+    // API: Kiểm tra HDV rảnh (AJAX gọi)
+    public function check_guides() {
+        // Chỉ trả về JSON
+        header('Content-Type: application/json');
+
+        $start = isset($_GET['start']) ? $_GET['start'] : null;
+        $end = isset($_GET['end']) ? $_GET['end'] : null;
+        $currentId = isset($_GET['id']) ? (int)$_GET['id'] : 0; // ID lịch hiện tại (dùng khi sửa)
+
+        if ($start && $end) {
+            $model = $this->model('ScheduleModel');
+            $guides = $model->getGuidesAvailability($start, $end, $currentId);
+            echo json_encode($guides);
+        } else {
+            echo json_encode([]);
+        }
+        exit;
+    }
 }
 ?>

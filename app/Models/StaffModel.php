@@ -4,14 +4,20 @@ require_once '../app/Core/Model.php';
 class StaffModel extends Model {
 
     // 1. Lấy danh sách HDV
-    public function getAllGuides() {
-        // Kết nối bảng nhansu và nguoidung để lấy tên đăng nhập (nếu có)
+    public function getAllGuides($limit = 10, $offset = 0) {
         $sql = "SELECT ns.*, nd.TenDangNhap, nd.TrangThai as TrangThaiTK 
                 FROM nhansu ns 
                 LEFT JOIN nguoidung nd ON ns.MaNhanSu = nd.MaNhanSu 
                 WHERE ns.LoaiNhanSu = 'HDV' 
-                ORDER BY ns.MaNhanSu DESC";
+                ORDER BY ns.MaNhanSu DESC
+                LIMIT $limit OFFSET $offset"; // <-- Nhớ thêm dòng này
+        
         return $this->conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // BỔ SUNG THÊM HÀM ĐẾM (Bắt buộc cho phân trang)
+    public function countGuides() {
+        return $this->conn->query("SELECT COUNT(*) FROM nhansu WHERE LoaiNhanSu='HDV'")->fetchColumn();
     }
 
     // 2. Lấy chi tiết 1 HDV
@@ -96,6 +102,20 @@ class StaffModel extends Model {
         // Ở đây giả định xóa nhân sự
         $stmt = $this->conn->prepare("DELETE FROM nhansu WHERE MaNhanSu = ?");
         return $stmt->execute([$id]);
+    }
+    // --- LẤY LỊCH LÀM VIỆC CỦA HDV ---
+    public function getSchedulesByGuide($staffId) {
+        $sql = "SELECT l.*, t.TenTour, t.SoNgay, 
+                       (SELECT COUNT(*) FROM booking b WHERE b.MaLichKhoiHanh = l.MaLichKhoiHanh AND b.TrangThai != 'Đã hủy') as SoDonHang
+                FROM lichkhoihanh l
+                JOIN tour t ON l.MaTour = t.MaTour
+                JOIN phanbonhansu p ON l.MaLichKhoiHanh = p.MaLichKhoiHanh
+                WHERE p.MaNhanSu = :id
+                ORDER BY l.NgayKhoiHanh DESC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['id' => $staffId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>

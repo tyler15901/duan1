@@ -79,12 +79,10 @@
                             </td>
                             <td>
                                 <?php 
-                                    $typeClass = match($s['LoaiCungCap']) {
-                                        'Vận chuyển' => 'warning text-dark',
-                                        'Lưu trú' => 'info text-dark',
-                                        'Ăn uống' => 'success text-white',
-                                        default => 'secondary text-white'
-                                    };
+                                    $typeClass = 'secondary text-white'; // Mặc định
+                                    if ($s['LoaiCungCap'] == 'Vận chuyển') $typeClass = 'warning text-dark';
+                                    elseif ($s['LoaiCungCap'] == 'Lưu trú') $typeClass = 'info text-dark';
+                                    elseif ($s['LoaiCungCap'] == 'Ăn uống') $typeClass = 'success text-white';
                                 ?>
                                 <span class="badge bg-<?php echo $typeClass; ?> bg-opacity-75 border border-white shadow-sm">
                                     <?php echo $s['LoaiCungCap']; ?>

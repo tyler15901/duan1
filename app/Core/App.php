@@ -7,6 +7,13 @@ class App {
     public function __construct() {
         $url = $this->parseUrl();
 
+        //Thêm kiểm tra if($url) để tránh lỗi khi vào trang chủ
+        if($url && isset($url[0])) {
+            if (file_exists('../app/Controllers/' . ucfirst($url[0]) . 'Controller.php')) {
+                $this->controller = ucfirst($url[0]) . 'Controller';
+                unset($url[0]);
+            }
+        }
         // 1. Kiểm tra xem Controller có tồn tại không
         if (isset($url[0])) {
             if (file_exists('../app/Controllers/' . ucfirst($url[0]) . 'Controller.php')) {
@@ -36,9 +43,10 @@ class App {
 
     public function parseUrl() {
         if (isset($_GET['url'])) {
-            // Cắt URL thành mảng, lọc bỏ ký tự lạ
             return explode('/', filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL));
         }
+        // [THÊM] Trả về mảng rỗng nếu không có url
+        return []; 
     }
 }
 ?>

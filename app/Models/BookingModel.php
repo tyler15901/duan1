@@ -8,8 +8,8 @@ class BookingModel extends Model {
         $sql = "SELECT b.*, kh.HoTen as TenKhach, kh.SoDienThoai, t.TenTour, lkh.LichCode 
                 FROM booking b
                 JOIN khachhang kh ON b.MaKhachHang = kh.MaKhachHang
-                JOIN lichkhoihanh lkh ON b.MaLichKhoiHanh = lkh.MaLichKhoiHanh
-                JOIN tour t ON lkh.MaTour = t.MaTour
+                LEFT JOIN lichkhoihanh lkh ON b.MaLichKhoiHanh = lkh.MaLichKhoiHanh -- Sửa thành LEFT JOIN
+                LEFT JOIN tour t ON lkh.MaTour = t.MaTour -- Sửa thành LEFT JOIN
                 WHERE 1=1";
 
         $params = [];
@@ -72,9 +72,12 @@ class BookingModel extends Model {
 
     // 4. Cập nhật trạng thái & File
     public function updateBooking($id, $data) {
-        $sql = "UPDATE booking SET TrangThai = :status, TrangThaiThanhToan = :payment_status";
+        // Thêm cập nhật TienCoc
+        $sql = "UPDATE booking SET 
+                TrangThai = :status, 
+                TrangThaiThanhToan = :payment_status,
+                TienCoc = :tien_coc"; // <--- Thêm dòng này
         
-        // Nếu có upload file mới thì cập nhật, không thì thôi
         if (!empty($data['file'])) {
             $sql .= ", FileDanhSachKhach = :file";
         }
@@ -84,6 +87,7 @@ class BookingModel extends Model {
         $params = [
             'status' => $data['status'],
             'payment_status' => $data['payment_status'],
+            'tien_coc' => $data['tien_coc'], // <--- Thêm tham số này
             'id' => $id
         ];
         
@@ -135,24 +139,38 @@ class BookingModel extends Model {
 
     // Tạo Booking mới
     public function createBooking($data) {
-        // Mã Booking Code sẽ được tạo tự động bằng PHP thay vì Trigger để an toàn hơn
-        // Tuy nhiên ở bài trước đã fix Trigger rồi nên ta cứ insert bình thường để Trigger làm việc
-        
+        // 1. INSERT dữ liệu vào DB (Chưa có mã)
         $sql = "INSERT INTO booking (
                     MaTour, MaLichKhoiHanh, MaKhachHang, 
-                    NgayKhoiHanh, -- Bổ sung cột này
+                    NgayKhoiHanh, 
                     SoLuongKhach, TongTien, TienCoc, 
                     TrangThai, TrangThaiThanhToan, NgayDat, GhiChu
                 ) 
                 VALUES (
                     :tour, :lich, :khach, 
-                    (SELECT NgayKhoiHanh FROM lichkhoihanh WHERE MaLichKhoiHanh = :lich), -- Lấy ngày tự động
+                    (SELECT NgayKhoiHanh FROM lichkhoihanh WHERE MaLichKhoiHanh = :lich), 
                     :sl, :tien, :coc, 
                     'Đã xác nhận', :tt_thanhtoan, NOW(), :ghichu
                 )";
         
         $stmt = $this->conn->prepare($sql);
-        return $stmt->execute($data);
+        
+        if ($stmt->execute($data)) {
+            // 2. Lấy ID của đơn hàng vừa tạo
+            $newId = $this->conn->lastInsertId();
+            
+            // 3. Tạo mã Code chuẩn: BK + Năm hiện tại + ID (được đệm số 0)
+            // Ví dụ: BK2025000091
+            $code = 'BK' . date('Y') . str_pad($newId, 6, '0', STR_PAD_LEFT);
+            
+            // 4. Cập nhật mã đó ngược lại vào Database
+            $sqlUpdate = "UPDATE booking SET MaBookingCode = :code WHERE MaBooking = :id";
+            $stmtUpdate = $this->conn->prepare($sqlUpdate);
+            $stmtUpdate->execute(['code' => $code, 'id' => $newId]);
+            
+            return true;
+        }
+        return false;
     }
 }
 ?>

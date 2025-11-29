@@ -17,7 +17,7 @@
                         <label class="form-label fw-bold text-uppercase small text-muted">Tour du lịch <span class="text-danger">*</span></label>
                         <select name="tour_id" id="tour_select" class="form-select form-select-lg fw-bold text-primary" required onchange="calcEndDate()">
                             <option value="" data-days="0">-- Vui lòng chọn Tour --</option>
-                            <?php foreach($tours as $t): ?>
+                            <?php foreach ($tours as $t): ?>
                                 <option value="<?php echo $t['MaTour']; ?>" data-days="<?php echo $t['SoNgay']; ?>">
                                     <?php echo $t['TenTour']; ?> (<?php echo $t['SoNgay']; ?> ngày)
                                 </option>
@@ -62,33 +62,28 @@
                     <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-layers text-success"></i> 2. Điều phối Tài nguyên</h5>
                 </div>
                 <div class="card-body">
+
+                    <h6 class="fw-bold text-dark border-bottom pb-2">Hướng dẫn viên</h6>
                     
-                    <label class="form-label fw-bold small text-muted mb-2">Hướng dẫn viên</label>
-                    <div class="list-group mb-4 shadow-sm" style="max-height: 200px; overflow-y: auto; border: 1px solid #e9ecef;">
-                        <?php foreach($staffs as $s): ?>
-                        <label class="list-group-item list-group-item-action d-flex align-items-center">
-                            <input class="form-check-input me-3" type="checkbox" name="staffs[]" value="<?php echo $s['MaNhanSu']; ?>">
-                            <div>
-                                <div class="fw-bold"><?php echo $s['HoTen']; ?></div>
-                                <small class="text-muted"><i class="bi bi-telephone-x"></i> <?php echo $s['SoDienThoai']; ?></small>
-                            </div>
-                        </label>
-                        <?php endforeach; ?>
+                    <div class="mb-4 shadow-sm" id="guide_container" style="max-height: 200px; overflow-y: auto; border: 1px solid #e9ecef; min-height: 50px;">
+                        <div class="text-muted small fst-italic p-3 text-center">
+                            <i class="bi bi-info-circle"></i> Vui lòng chọn <b>Ngày khởi hành</b> để hệ thống kiểm tra lịch làm việc của HDV.
+                        </div>
                     </div>
 
-                    <label class="form-label fw-bold small text-muted mb-2">Xe & Khách sạn (Đối tác)</label>
+                    <h6 class="fw-bold text-dark border-bottom pb-2 mt-4">Xe & Khách sạn (Đối tác)</h6>
                     <div class="list-group shadow-sm" style="max-height: 250px; overflow-y: auto; border: 1px solid #e9ecef;">
-                        <?php foreach($resources as $res): ?>
-                        <label class="list-group-item list-group-item-action d-flex align-items-start">
-                            <input class="form-check-input me-3 mt-2" type="checkbox" name="resources[]" value="<?php echo $res['MaTaiNguyen']; ?>">
-                            <div>
-                                <div class="fw-bold text-dark"><?php echo $res['TenTaiNguyen']; ?></div>
-                                <div class="small text-muted">
-                                    <span class="badge bg-light text-dark border"><?php echo $res['LoaiCungCap']; ?></span>
-                                    <?php echo $res['TenNhaCungCap']; ?>
+                        <?php foreach ($resources as $res): ?>
+                            <label class="list-group-item list-group-item-action d-flex align-items-start">
+                                <input class="form-check-input me-3 mt-2" type="checkbox" name="resources[]" value="<?php echo $res['MaTaiNguyen']; ?>">
+                                <div>
+                                    <div class="fw-bold text-dark"><?php echo $res['TenTaiNguyen']; ?></div>
+                                    <div class="small text-muted">
+                                        <span class="badge bg-light text-dark border"><?php echo $res['LoaiCungCap']; ?></span>
+                                        <?php echo $res['TenNhaCungCap']; ?>
+                                    </div>
                                 </div>
-                            </div>
-                        </label>
+                            </label>
                         <?php endforeach; ?>
                     </div>
                 </div>
@@ -108,21 +103,83 @@
     </div>
 </form>
 
-<br><br><br><script>
-function calcEndDate() {
-    const tourSelect = document.getElementById('tour_select');
-    const startDateInput = document.getElementById('start_date');
-    const endDateInput = document.getElementById('end_date');
-    const days = parseInt(tourSelect.options[tourSelect.selectedIndex].getAttribute('data-days')) || 0;
-    const startDateStr = startDateInput.value;
+<br><br><br>
 
-    if (startDateStr && days > 0) {
-        const date = new Date(startDateStr);
-        date.setDate(date.getDate() + days - 1); 
-        const yyyy = date.getFullYear();
-        const mm = String(date.getMonth() + 1).padStart(2, '0');
-        const dd = String(date.getDate()).padStart(2, '0');
-        endDateInput.value = `${yyyy}-${mm}-${dd}`;
+<script>
+    // Hàm tính ngày kết thúc & gọi load HDV
+    function calcEndDate() {
+        const tourSelect = document.getElementById('tour_select');
+        const startDateInput = document.getElementById('start_date');
+        const endDateInput = document.getElementById('end_date');
+
+        const days = parseInt(tourSelect.options[tourSelect.selectedIndex].getAttribute('data-days')) || 0;
+        const startDateStr = startDateInput.value;
+
+        if (startDateStr && days > 0) {
+            const date = new Date(startDateStr);
+            date.setDate(date.getDate() + days - 1);
+            
+            // Format YYYY-MM-DD
+            const yyyy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const dd = String(date.getDate()).padStart(2, '0');
+            
+            const endDateStr = `${yyyy}-${mm}-${dd}`;
+            endDateInput.value = endDateStr;
+
+            // SAU KHI CÓ NGÀY -> GỌI HÀM CHECK HDV
+            loadAvailableGuides(startDateStr, endDateStr);
+        }
     }
-}
+
+    // --- HÀM LOAD HDV THEO NGÀY ---
+    function loadAvailableGuides(start, end) {
+        const container = document.getElementById('guide_container');
+        // Hiển thị trạng thái đang tải
+        container.innerHTML = '<div class="text-primary p-3 text-center"><span class="spinner-border spinner-border-sm"></span> Đang kiểm tra lịch làm việc...</div>';
+
+        fetch(`<?php echo BASE_URL; ?>/schedule/check_guides?start=${start}&end=${end}`)
+            .then(response => response.json())
+            .then(data => {
+                container.innerHTML = ''; // Xóa sạch nội dung loading
+                
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="text-danger p-3 text-center">Không tìm thấy HDV nào trong hệ thống.</div>';
+                    return;
+                }
+
+                // Render danh sách mới
+                let htmlContent = '<div class="list-group list-group-flush">';
+                
+                data.forEach(g => {
+                    const isBusy = g.is_busy;
+                    const disabledAttr = isBusy ? 'disabled' : '';
+                    const colorClass = isBusy ? 'list-group-item-light text-muted' : 'list-group-item-action';
+                    const textDecor = isBusy ? 'text-decoration-line-through' : 'fw-bold';
+                    const busyLabel = isBusy ? '<span class="badge bg-danger ms-auto">Đang bận</span>' : '<span class="badge bg-success bg-opacity-10 text-success ms-auto">Rảnh</span>';
+
+                    htmlContent += `
+                        <label class="list-group-item ${colorClass} d-flex align-items-center">
+                            <input class="form-check-input me-3" type="checkbox" name="staffs[]" 
+                                value="${g.MaNhanSu}" id="staff_${g.MaNhanSu}" ${disabledAttr}>
+                            
+                            <div class="flex-grow-1">
+                                <div class="${textDecor}">${g.HoTen}</div>
+                                <small class="text-muted" style="font-size: 0.8rem;">
+                                    ${g.SoDienThoai}
+                                </small>
+                            </div>
+                            ${busyLabel}
+                        </label>
+                    `;
+                });
+                
+                htmlContent += '</div>';
+                container.innerHTML = htmlContent;
+            })
+            .catch(error => {
+                console.error(error);
+                container.innerHTML = '<div class="text-danger p-3 text-center">Lỗi kết nối server!</div>';
+            });
+    }
 </script>

@@ -14,7 +14,8 @@
             <div class="col-md-6">
                 <div class="input-group">
                     <span class="input-group-text bg-white text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" class="form-control border-start-0 ps-0" placeholder="Tìm theo tên, SĐT hoặc Email...">
+                    <input type="text" class="form-control border-start-0 ps-0"
+                        placeholder="Tìm theo tên, SĐT hoặc Email...">
                 </div>
             </div>
             <div class="col-md-4">
@@ -59,16 +60,18 @@
                                     <div class="d-flex align-items-center">
                                         <div class="position-relative">
                                             <?php if ($g['AnhDaiDien']): ?>
-                                                <img src="<?php echo BASE_URL; ?>/assets/uploads/<?php echo $g['AnhDaiDien']; ?>" 
-                                                     class="rounded-circle border" style="width: 48px; height: 48px; object-fit: cover;">
+                                                <img src="<?php echo BASE_URL; ?>/assets/uploads/<?php echo $g['AnhDaiDien']; ?>"
+                                                    class="rounded-circle border"
+                                                    style="width: 48px; height: 48px; object-fit: cover;">
                                             <?php else: ?>
-                                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-muted border" 
-                                                     style="width: 48px; height: 48px; font-size: 20px;">
+                                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-muted border"
+                                                    style="width: 48px; height: 48px; font-size: 20px;">
                                                     <?php echo strtoupper(substr($g['HoTen'], 0, 1)); ?>
                                                 </div>
                                             <?php endif; ?>
-                                            
-                                            <span class="position-absolute bottom-0 end-0 p-1 bg-<?php echo ($g['TrangThaiTK'] == 'Hoạt động') ? 'success' : 'danger'; ?> border border-white rounded-circle"></span>
+
+                                            <span
+                                                class="position-absolute bottom-0 end-0 p-1 bg-<?php echo ($g['TrangThaiTK'] == 'Hoạt động') ? 'success' : 'danger'; ?> border border-white rounded-circle"></span>
                                         </div>
                                         <div class="ms-3">
                                             <div class="fw-bold text-dark"><?php echo $g['HoTen']; ?></div>
@@ -76,23 +79,26 @@
                                         </div>
                                     </div>
                                 </td>
-                                
+
                                 <td>
                                     <div class="d-flex flex-column small">
-                                        <span class="mb-1"><i class="bi bi-telephone text-primary w-20"></i> <?php echo $g['SoDienThoai']; ?></span>
-                                        <span class="text-muted"><i class="bi bi-envelope w-20"></i> <?php echo $g['Email']; ?></span>
+                                        <span class="mb-1"><i class="bi bi-telephone text-primary w-20"></i>
+                                            <?php echo $g['SoDienThoai']; ?></span>
+                                        <span class="text-muted"><i class="bi bi-envelope w-20"></i>
+                                            <?php echo $g['Email']; ?></span>
                                     </div>
                                 </td>
 
                                 <td>
-                                    <?php 
-                                        $badgeColor = match($g['PhanLoai']) {
-                                            'Tour quốc tế' => 'primary',
-                                            'Tour theo yêu cầu' => 'warning text-dark',
-                                            default => 'info text-dark'
-                                        };
+                                    <?php
+                                    $badgeColor = 'info text-dark'; // Mặc định
+                                    if ($g['PhanLoai'] == 'Tour quốc tế')
+                                        $badgeColor = 'primary';
+                                    elseif ($g['PhanLoai'] == 'Tour theo yêu cầu')
+                                        $badgeColor = 'warning text-dark';
                                     ?>
-                                    <span class="badge bg-<?php echo $badgeColor; ?> bg-opacity-10 border border-<?php echo $badgeColor; ?> text-<?php echo str_replace(' text-dark','',$badgeColor); ?>">
+                                    <span
+                                        class="badge bg-<?php echo $badgeColor; ?> bg-opacity-10 border border-<?php echo $badgeColor; ?> text-<?php echo str_replace(' text-dark', '', $badgeColor); ?>">
                                         <?php echo $g['PhanLoai']; ?>
                                     </span>
                                 </td>
@@ -109,21 +115,24 @@
                                     <?php endif; ?>
                                 </td>
 
-                                <td class="text-end pe-4">
-                                    <a href="<?php echo BASE_URL; ?>/staff/edit/<?php echo $g['MaNhanSu']; ?>" class="btn btn-sm btn-light border text-primary" title="Chỉnh sửa">
-                                        <i class="bi bi-pencil-square"></i>
+                                <td>
+                                    <a href="<?php echo BASE_URL; ?>/staff/schedule?id=<?php echo $g['MaNhanSu']; ?>"
+                                        class="btn btn-sm btn-info text-white" title="Xem lịch làm việc">
+                                        <i class="bi bi-calendar-range"></i>
                                     </a>
-                                    <a href="<?php echo BASE_URL; ?>/staff/delete/<?php echo $g['MaNhanSu']; ?>" 
-                                       class="btn btn-sm btn-light border text-danger ms-1" 
-                                       onclick="return confirm('Cảnh báo: Xóa HDV sẽ xóa cả tài khoản đăng nhập.\nBạn có chắc chắn không?')" title="Xóa">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
+
+                                    <a href="<?php echo BASE_URL; ?>/staff/edit/<?php echo $g['MaNhanSu']; ?>"
+                                        class="btn btn-sm btn-warning">Sửa</a>
+                                    <a href="<?php echo BASE_URL; ?>/staff/delete/<?php echo $g['MaNhanSu']; ?>" ...>Xóa</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </tbody>
             </table>
+        </div>
+        <div class="mt-3">
+            <?php include '../app/Views/layouts/pagination.php'; ?>
         </div>
     </div>
 </div>

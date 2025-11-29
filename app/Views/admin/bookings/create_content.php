@@ -10,30 +10,35 @@
         <div class="col-lg-8">
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-white py-3 border-bottom-0">
-                    <h5 class="mb-0 text-primary fw-bold"><i class="bi bi-info-circle"></i> 1. Thông tin Tour & Lịch trình</h5>
+                    <h5 class="mb-0 text-primary fw-bold"><i class="bi bi-info-circle"></i> 1. Thông tin Tour & Lịch
+                        trình</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-12">
                             <label class="form-label fw-bold">Chọn Tour <span class="text-danger">*</span></label>
-                            <select name="tour_id" id="tour_select" class="form-select form-select-lg" required onchange="loadSchedules()">
+                            <select name="tour_id" id="tour_select" class="form-select form-select-lg" required
+                                onchange="loadSchedules()">
                                 <option value="">-- Tìm kiếm và chọn Tour --</option>
-                                <?php foreach($tours as $t): ?>
+                                <?php foreach ($tours as $t): ?>
                                     <option value="<?php echo $t['MaTour']; ?>"><?php echo $t['TenTour']; ?></option>
                                 <?php endforeach; ?>
                             </select>
                             <div class="form-text">
-                                Không thấy tour? <a href="<?php echo BASE_URL; ?>/tour/create" target="_blank">Tạo Tour mới</a> rồi tải lại trang.
+                                Không thấy tour? <a href="<?php echo BASE_URL; ?>/tour/create" target="_blank">Tạo Tour
+                                    mới</a> rồi tải lại trang.
                             </div>
                         </div>
 
                         <div class="col-md-12">
-                            <label class="form-label fw-bold">Chọn Ngày Khởi Hành <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold">Chọn Ngày Khởi Hành <span
+                                    class="text-danger">*</span></label>
                             <div class="input-group">
                                 <select name="lich_id" id="schedule_select" class="form-select" required disabled>
                                     <option value="">-- Vui lòng chọn Tour trước --</option>
                                 </select>
-                                <button class="btn btn-light border" type="button" onclick="loadSchedules()" title="Tải lại">
+                                <button class="btn btn-light border" type="button" onclick="loadSchedules()"
+                                    title="Tải lại">
                                     <i class="bi bi-arrow-clockwise"></i>
                                 </button>
                             </div>
@@ -51,7 +56,8 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Số điện thoại <span class="text-danger">*</span></label>
-                            <input type="text" name="so_dien_thoai" class="form-control" required placeholder="09xxx...">
+                            <input type="text" name="so_dien_thoai" class="form-control" required
+                                placeholder="09xxx...">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Họ và tên <span class="text-danger">*</span></label>
@@ -59,7 +65,9 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Số lượng khách <span class="text-danger">*</span></label>
-                            <input type="number" name="so_luong" id="pax_count" class="form-control" value="1" min="1" required>
+                            <input type="number" name="so_luong" id="pax_count" class="form-control" value="1" min="1"
+                                required
+                                oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1">
                         </div>
                     </div>
                 </div>
@@ -74,7 +82,8 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Tổng tiền (VNĐ)</label>
-                        <input type="text" id="display_money" class="form-control form-control-lg fw-bold text-primary" placeholder="0" onkeyup="formatCurrency(this)">
+                        <input type="text" id="display_money" class="form-control form-control-lg fw-bold text-primary"
+                            placeholder="0" onkeyup="formatCurrency(this)">
                         <input type="hidden" name="tong_tien" id="real_money">
                         <div class="form-text small">Nhập số tiền, hệ thống tự thêm dấu phẩy.</div>
                     </div>
@@ -86,7 +95,7 @@
                             <option value="Đã thanh toán">Đã thanh toán hết</option>
                         </select>
                     </div>
-                    
+
                     <hr>
                     <button type="submit" class="btn btn-primary btn-lg w-100 shadow">
                         <i class="bi bi-check-lg"></i> Xác nhận Đặt Tour
@@ -129,18 +138,18 @@
             .then(response => response.json())
             .then(data => {
                 scheduleSelect.innerHTML = '<option value="">-- Chọn ngày khởi hành --</option>';
-                
+
                 if (data.length > 0) {
                     messageDiv.innerHTML = ''; // Clear loading
                     data.forEach(item => {
                         const slotsLeft = item.SoChoToiDa - item.SoKhachHienTai;
                         const dateStr = new Date(item.NgayKhoiHanh).toLocaleDateString('vi-VN');
                         const option = document.createElement('option');
-                        
+
                         option.value = item.MaLichKhoiHanh;
                         option.text = `[${dateStr}] - ${item.LichCode} (Còn ${slotsLeft} chỗ)`;
                         option.setAttribute('data-slots', slotsLeft);
-                        
+
                         if (slotsLeft <= 0) {
                             option.disabled = true;
                             option.text += ' - HẾT CHỖ';
@@ -167,12 +176,12 @@
                 messageDiv.innerHTML = '<span class="text-danger">Lỗi kết nối server!</span>';
             });
     }
-    
+
     // Logic cập nhật max slot
-    document.getElementById('schedule_select').addEventListener('change', function() {
+    document.getElementById('schedule_select').addEventListener('change', function () {
         const messageDiv = document.getElementById('schedule_message');
         const selectedOption = this.options[this.selectedIndex];
-        
+
         if (this.value) {
             const slots = selectedOption.getAttribute('data-slots');
             messageDiv.innerHTML = `<span class="badge bg-info text-dark">Lịch trình OK</span> <span class="text-success fw-bold">Còn ${slots} chỗ trống</span>`;

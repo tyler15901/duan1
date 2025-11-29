@@ -126,30 +126,8 @@
     </div>
     
     <?php if ($pagination['total_pages'] > 1): ?>
-    <div class="card-footer bg-white py-3 border-0">
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center mb-0">
-                <li class="page-item <?php echo ($pagination['current_page'] <= 1) ? 'disabled' : ''; ?>">
-                    <a class="page-link border-0" href="?page=<?php echo $pagination['current_page'] - 1; ?>&cat=<?php echo $pagination['cat_id']; ?>&q=<?php echo $pagination['keyword']; ?>">
-                        <i class="bi bi-chevron-left"></i>
-                    </a>
-                </li>
-
-                <?php for ($i = 1; $i <= $pagination['total_pages']; $i++): ?>
-                    <li class="page-item <?php echo ($i == $pagination['current_page']) ? 'active' : ''; ?>">
-                        <a class="page-link border-0 rounded-circle mx-1" href="?page=<?php echo $i; ?>&cat=<?php echo $pagination['cat_id']; ?>&q=<?php echo $pagination['keyword']; ?>">
-                            <?php echo $i; ?>
-                        </a>
-                    </li>
-                <?php endfor; ?>
-
-                <li class="page-item <?php echo ($pagination['current_page'] >= $pagination['total_pages']) ? 'disabled' : ''; ?>">
-                    <a class="page-link border-0" href="?page=<?php echo $pagination['current_page'] + 1; ?>&cat=<?php echo $pagination['cat_id']; ?>&q=<?php echo $pagination['keyword']; ?>">
-                        <i class="bi bi-chevron-right"></i>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
+        <div class="card-footer bg-white py-3 border-0">
+            <?php include '../app/Views/layouts/pagination.php'; ?>
+        </div>
     <?php endif; ?>
 </div>

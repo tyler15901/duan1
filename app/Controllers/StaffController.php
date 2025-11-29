@@ -10,8 +10,24 @@ class StaffController extends Controller
     public function index()
     {
         $model = $this->model('StaffModel');
-        $guides = $model->getAllGuides();
-        $this->view('admin/staffs/index', ['guides' => $guides]);
+        
+        // Phân trang
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = 10; // 10 người mỗi trang
+        $offset = ($page - 1) * $limit;
+
+        $guides = $model->getAllGuides($limit, $offset);
+        $total = $model->countGuides();
+        
+        $data = [
+            'guides' => $guides,
+            'pagination' => [
+                'current_page' => $page,
+                'total_pages' => ceil($total / $limit)
+            ]
+        ];
+        
+        $this->view('admin/staffs/index', $data);
     }
 
     public function create()
@@ -53,10 +69,11 @@ class StaffController extends Controller
         }
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $model = $this->model('StaffModel');
         $guide = $model->getGuideById($id);
-        
+
         // Nếu không tìm thấy HDV thì quay về danh sách
         if (!$guide) {
             header("Location: " . BASE_URL . "/staff/index");
@@ -67,7 +84,8 @@ class StaffController extends Controller
     }
 
     // --- XỬ LÝ CẬP NHẬT ---
-    public function update($id) {
+    public function update($id)
+    {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $model = $this->model('StaffModel');
 
@@ -87,7 +105,10 @@ class StaffController extends Controller
                 'diachi' => $_POST['dia_chi'],
                 'phanloai' => $_POST['phan_loai']
             ];
-
+            if (strlen($_POST['password']) < 6) {
+                echo "<script>alert('Mật khẩu phải từ 6 ký tự trở lên!'); window.history.back();</script>";
+                return;
+            }
             // Nếu có ảnh mới thì thêm vào mảng data, không thì thôi (Model tự hiểu)
             if ($avatar) {
                 $data['anh'] = $avatar;
@@ -107,6 +128,32 @@ class StaffController extends Controller
         $model = $this->model('StaffModel');
         $model->deleteGuide($id);
         header("Location: " . BASE_URL . "/staff/index");
+    }
+
+    // --- XEM LỊCH LÀM VIỆC CỦA HDV ---
+    public function schedule()
+    {
+        // 1. Kiểm tra ID trên URL (Bắt buộc phải có)
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+        if ($id <= 0) {
+            // Không có ID -> Về trang danh sách
+            header("Location: " . BASE_URL . "/staff/index");
+            exit;
+        }
+
+        $model = $this->model('StaffModel');
+
+        // 2. Lấy thông tin HDV và Lịch của họ
+        $selected_guide = $model->getGuideById($id);
+        $schedules = $model->getSchedulesByGuide($id);
+
+        $data = [
+            'guide' => $selected_guide,
+            'schedules' => $schedules
+        ];
+
+        $this->view('admin/staffs/schedule', $data);
     }
 }
 ?>

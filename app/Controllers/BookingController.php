@@ -55,25 +55,40 @@ class BookingController extends Controller
     }
 
     // Xử lý cập nhật (Trạng thái + File danh sách)
-    public function update($id)
-    {
+    public function update($id) {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $model = $this->model('BookingModel');
+            
+            // 1. Lấy thông tin đơn hàng hiện tại để biết Tổng tiền
+            $currentBooking = $model->getBookingById($id);
+            $tongTien = (float)$currentBooking['TongTien'];
+            $paymentStatus = $_POST['thanh_toan'];
+            $tienCoc = (float)$currentBooking['TienCoc']; // Mặc định giữ nguyên cọc cũ
 
-            // Xử lý upload file danh sách khách
+            // 2. Logic cập nhật Tiền Cọc dựa trên Trạng thái mới
+            if ($paymentStatus == 'Đã thanh toán') {
+                $tienCoc = $tongTien; // Update cọc = tổng tiền
+            } elseif ($paymentStatus == 'Chưa thanh toán') {
+                $tienCoc = 0;
+            } 
+            // Nếu là 'Đã cọc' thì giữ nguyên số tiền cọc hiện có trong DB (hoặc tính 50% nếu muốn cứng nhắc)
+
+            // 3. Xử lý file upload (Giữ nguyên code cũ)
             $fileName = null;
             if (!empty($_FILES['guest_file']['name'])) {
-                // Chỉ cho phép file excel/doc/pdf
                 $fileName = time() . '_' . $_FILES['guest_file']['name'];
                 move_uploaded_file($_FILES['guest_file']['tmp_name'], '../public/assets/uploads/files/' . $fileName);
             }
 
+            // 4. Chuẩn bị dữ liệu update
             $data = [
-                'status' => $_POST['trang_thai'], // Xác nhận/Hủy
-                'payment_status' => $_POST['thanh_toan'], // Đã cọc/Đã TT
-                'file' => $fileName
+                'status' => $_POST['trang_thai'],
+                'payment_status' => $paymentStatus,
+                'file' => $fileName,
+                'tien_coc' => $tienCoc // Thêm tham số này để update vào DB
             ];
 
+            // 5. Gọi Model (Cần sửa Model chút xíu để nhận tien_coc)
             if ($model->updateBooking($id, $data)) {
                 echo "<script>alert('Cập nhật đơn hàng thành công!'); window.location.href='" . BASE_URL . "/booking/detail/$id';</script>";
             } else {
@@ -97,6 +112,7 @@ class BookingController extends Controller
 
     public function get_schedules()
     {
+        error_reporting(0); // Tắt báo lỗi để không làm hỏng JSON
         if (isset($_GET['tour_id'])) {
             $model = $this->model('BookingModel');
             $schedules = $model->getSchedulesByTour($_GET['tour_id']);

@@ -9,11 +9,11 @@
         <div class="card shadow-sm border-0 border-top border-4 border-primary h-100">
             <div class="card-body text-center pt-5 pb-4">
                 <div class="mb-3">
-                    <?php if($supplier['LoaiCungCap'] == 'Vận chuyển'): ?>
+                    <?php if ($supplier['LoaiCungCap'] == 'Vận chuyển'): ?>
                         <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex p-3">
                             <i class="bi bi-bus-front-fill fs-1"></i>
                         </div>
-                    <?php elseif($supplier['LoaiCungCap'] == 'Lưu trú'): ?>
+                    <?php elseif ($supplier['LoaiCungCap'] == 'Lưu trú'): ?>
                         <div class="bg-info bg-opacity-10 text-info rounded-circle d-inline-flex p-3">
                             <i class="bi bi-building-fill fs-1"></i>
                         </div>
@@ -23,7 +23,7 @@
                         </div>
                     <?php endif; ?>
                 </div>
-                
+
                 <h4 class="fw-bold text-dark mb-1"><?php echo $supplier['TenNhaCungCap']; ?></h4>
                 <span class="badge bg-light text-dark border mb-3"><?php echo $supplier['LoaiCungCap']; ?></span>
 
@@ -38,7 +38,7 @@
                     </li>
                     <li class="list-group-item px-0 border-0 d-flex justify-content-between">
                         <span class="text-muted small">Trạng thái:</span>
-                        <?php if($supplier['TrangThai'] == 'Hoạt động'): ?>
+                        <?php if ($supplier['TrangThai'] == 'Hoạt động'): ?>
                             <span class="text-success fw-bold"><i class="bi bi-check-circle"></i> Hoạt động</span>
                         <?php else: ?>
                             <span class="text-danger fw-bold"><i class="bi bi-x-circle"></i> Dừng</span>
@@ -46,9 +46,15 @@
                     </li>
                 </ul>
 
-                <div class="d-grid mt-4">
-                    <a href="<?php echo BASE_URL; ?>/supplier/edit/<?php echo $supplier['MaNhaCungCap']; ?>" class="btn btn-outline-primary btn-sm">
+                <div class="d-grid mt-4 gap-2">
+                    <a href="<?php echo BASE_URL; ?>/supplier/edit/<?php echo $supplier['MaNhaCungCap']; ?>"
+                        class="btn btn-outline-primary btn-sm">
                         <i class="bi bi-pencil"></i> Chỉnh sửa thông tin
+                    </a>
+                    <a href="<?php echo BASE_URL; ?>/supplier/delete/<?php echo $supplier['MaNhaCungCap']; ?>"
+                        class="btn btn-outline-danger btn-sm"
+                        onclick="return confirm('CẢNH BÁO: Xóa nhà cung cấp này sẽ xóa toàn bộ xe/phòng và lịch sử liên quan. Bạn có chắc không?')">
+                        <i class="bi bi-trash"></i> Xóa đối tác này
                     </a>
                 </div>
             </div>
@@ -64,21 +70,23 @@
                 </h5>
             </div>
             <div class="card-body">
-                
+
                 <div class="bg-light p-3 rounded mb-4 border">
                     <h6 class="fw-bold small text-uppercase text-muted mb-3">Thêm tài sản mới (Xe / Phòng)</h6>
-                    <form action="<?php echo BASE_URL; ?>/supplier/store_resource/<?php echo $supplier['MaNhaCungCap']; ?>" method="POST" class="row g-2">
+                    <form
+                        action="<?php echo BASE_URL; ?>/supplier/store_resource/<?php echo $supplier['MaNhaCungCap']; ?>"
+                        method="POST" class="row g-2">
                         <div class="col-md-5">
-                            <input type="text" name="ten_tai_nguyen" class="form-control form-control-sm" required 
-                                   placeholder="Tên/Biển số (VD: 29B-12345, Phòng VIP)">
+                            <input type="text" name="ten_tai_nguyen" class="form-control form-control-sm" required
+                                placeholder="Tên/Biển số (VD: 29B-12345, Phòng VIP)">
                         </div>
                         <div class="col-md-3">
-                            <input type="number" name="so_luong_cho" class="form-control form-control-sm" value="" 
-                                   placeholder="Sức chứa (Chỗ)">
+                            <input type="number" name="so_luong_cho" class="form-control form-control-sm" value=""
+                                placeholder="Sức chứa (Chỗ)">
                         </div>
                         <div class="col-md-3">
-                            <input type="text" name="ghi_chu" class="form-control form-control-sm" 
-                                   placeholder="Ghi chú (Màu xe, View...)">
+                            <input type="text" name="ghi_chu" class="form-control form-control-sm"
+                                placeholder="Ghi chú (Màu xe, View...)">
                         </div>
                         <div class="col-md-1">
                             <button type="submit" class="btn btn-success btn-sm w-100" title="Thêm">
@@ -99,7 +107,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if(empty($resources)): ?>
+                            <?php if (empty($resources)): ?>
                                 <tr>
                                     <td colspan="4" class="text-center py-5 text-muted">
                                         <i class="bi bi-inbox fs-1 opacity-25"></i>
@@ -107,26 +115,27 @@
                                     </td>
                                 </tr>
                             <?php else: ?>
-                                <?php foreach($resources as $res): ?>
-                                <tr>
-                                    <td class="fw-bold text-dark">
-                                        <i class="bi bi-record-circle text-primary small me-2"></i>
-                                        <?php echo $res['TenTaiNguyen']; ?>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge bg-light text-dark border rounded-pill px-3">
-                                            <?php echo $res['SoLuongCho']; ?>
-                                        </span>
-                                    </td>
-                                    <td class="small text-muted"><?php echo $res['GhiChu']; ?></td>
-                                    <td class="text-end">
-                                        <a href="<?php echo BASE_URL; ?>/supplier/delete_resource/<?php echo $res['MaTaiNguyen']; ?>/<?php echo $supplier['MaNhaCungCap']; ?>" 
-                                           class="btn btn-sm btn-light text-danger border-0 hover-danger" 
-                                           onclick="return confirm('Bạn có chắc muốn xóa tài sản [<?php echo $res['TenTaiNguyen']; ?>] không?')" title="Xóa bỏ">
-                                           <i class="bi bi-trash"></i>
-                                        </a>
-                                    </td>
-                                </tr>
+                                <?php foreach ($resources as $res): ?>
+                                    <tr>
+                                        <td class="fw-bold text-dark">
+                                            <i class="bi bi-record-circle text-primary small me-2"></i>
+                                            <?php echo $res['TenTaiNguyen']; ?>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-light text-dark border rounded-pill px-3">
+                                                <?php echo $res['SoLuongCho']; ?>
+                                            </span>
+                                        </td>
+                                        <td class="small text-muted"><?php echo $res['GhiChu']; ?></td>
+                                        <td class="text-end">
+                                            <a href="<?php echo BASE_URL; ?>/supplier/delete_resource/<?php echo $res['MaTaiNguyen']; ?>/<?php echo $supplier['MaNhaCungCap']; ?>"
+                                                class="btn btn-sm btn-light text-danger border-0 hover-danger"
+                                                onclick="return confirm('Bạn có chắc muốn xóa tài sản [<?php echo $res['TenTaiNguyen']; ?>] không?')"
+                                                title="Xóa bỏ">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </tbody>

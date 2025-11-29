@@ -53,7 +53,7 @@ class HomeController extends Controller {
         $data = [
             'tour' => $tourModel->getTourById($id),
             'gallery' => $tourModel->getGallery($id),
-            'schedules' => $scheduleModel->getAllSchedules($id), // Lấy lịch của tour này
+            'schedules' => $scheduleModel->getSchedulesFiltered(['tour_id' => $id], 100, 0), // Lấy 100 lịch sắp tới
             'prices' => $tourModel->getPrices($id),
             'schedule_detail' => $tourModel->getSchedule($id) // Lịch trình chi tiết (ngày 1, ngày 2)
         ];

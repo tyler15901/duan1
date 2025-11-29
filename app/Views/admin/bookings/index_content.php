@@ -11,9 +11,9 @@
             <div class="col-md-6">
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-                    <input type="text" name="q" class="form-control border-start-0 ps-0" 
-                           placeholder="Tìm theo mã đơn, tên khách, SĐT..." 
-                           value="<?php echo htmlspecialchars($pagination['keyword'] ?? ''); ?>">
+                    <input type="text" name="q" class="form-control border-start-0 ps-0"
+                        placeholder="Tìm theo mã đơn, tên khách, SĐT..."
+                        value="<?php echo htmlspecialchars($pagination['keyword'] ?? ''); ?>">
                 </div>
             </div>
             <div class="col-md-3">
@@ -46,7 +46,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if(empty($bookings)): ?>
+                    <?php if (empty($bookings)): ?>
                         <tr>
                             <td colspan="7" class="text-center py-5 text-muted">
                                 <i class="bi bi-inbox fs-1 d-block mb-2"></i>
@@ -54,59 +54,64 @@
                             </td>
                         </tr>
                     <?php else: ?>
-                        <?php foreach($bookings as $b): ?>
-                        <tr>
-                            <td class="ps-4 fw-bold text-primary">#<?php echo $b['MaBookingCode']; ?></td>
-                            <td>
-                                <div class="fw-bold text-dark"><?php echo $b['TenKhach']; ?></div>
-                                <div class="small text-muted"><i class="bi bi-telephone"></i> <?php echo $b['SoDienThoai']; ?></div>
-                            </td>
-                            <td>
-                                <div class="fw-bold text-truncate" style="max-width: 250px;" title="<?php echo $b['TenTour']; ?>">
-                                    <?php echo $b['TenTour']; ?>
-                                </div>
-                                <div class="small text-secondary mt-1">
-                                    <i class="bi bi-calendar-event text-info"></i> 
-                                    <a href="<?php echo BASE_URL; ?>/schedule/guests/<?php echo $b['MaLichKhoiHanh']; ?>" class="text-decoration-none">
-                                        <?php echo $b['LichCode']; ?>
-                                    </a>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-light text-dark border rounded-pill px-3">
-                                    <?php echo $b['SoLuongKhach']; ?>
-                                </span>
-                            </td>
-                            
-                            <td>
-                                <?php 
-                                    $statusClass = match($b['TrangThai']) {
+                        <?php foreach ($bookings as $b): ?>
+                            <tr>
+                                <td class="ps-4 fw-bold text-primary">#<?php echo $b['MaBookingCode']; ?></td>
+                                <td>
+                                    <div class="fw-bold text-dark"><?php echo $b['TenKhach']; ?></div>
+                                    <div class="small text-muted"><i class="bi bi-telephone"></i>
+                                        <?php echo $b['SoDienThoai']; ?></div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-truncate" style="max-width: 250px;"
+                                        title="<?php echo $b['TenTour']; ?>">
+                                        <?php echo $b['TenTour']; ?>
+                                    </div>
+                                    <div class="small text-secondary mt-1">
+                                        <i class="bi bi-calendar-event text-info"></i>
+                                        <a href="<?php echo BASE_URL; ?>/schedule/guests/<?php echo $b['MaLichKhoiHanh']; ?>"
+                                            class="text-decoration-none">
+                                            <?php echo $b['LichCode']; ?>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border rounded-pill px-3">
+                                        <?php echo $b['SoLuongKhach']; ?>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <?php
+                                    $statusClass = match ($b['TrangThai']) {
                                         'Đã xác nhận' => 'success',
                                         'Đã hủy' => 'danger',
                                         default => 'warning text-dark'
                                     };
-                                ?>
-                                <span class="badge bg-<?php echo $statusClass; ?> bg-opacity-75">
-                                    <?php echo $b['TrangThai']; ?>
-                                </span>
-                            </td>
+                                    ?>
+                                    <span class="badge bg-<?php echo $statusClass; ?> bg-opacity-75">
+                                        <?php echo $b['TrangThai']; ?>
+                                    </span>
+                                </td>
 
-                            <td>
-                                <?php if($b['TrangThaiThanhToan']=='Đã thanh toán'): ?>
-                                    <span class="text-success small fw-bold"><i class="bi bi-check-circle-fill"></i> Hoàn tất</span>
-                                <?php elseif($b['TrangThaiThanhToan']=='Đã cọc'): ?>
-                                    <span class="text-warning small fw-bold"><i class="bi bi-pie-chart-fill"></i> Đã cọc</span>
-                                <?php else: ?>
-                                    <span class="text-muted small"><i class="bi bi-circle"></i> Chưa TT</span>
-                                <?php endif; ?>
-                            </td>
+                                <td>
+                                    <?php if ($b['TrangThaiThanhToan'] == 'Đã thanh toán'): ?>
+                                        <span class="text-success small fw-bold"><i class="bi bi-check-circle-fill"></i> Hoàn
+                                            tất</span>
+                                    <?php elseif ($b['TrangThaiThanhToan'] == 'Đã cọc'): ?>
+                                        <span class="text-warning small fw-bold"><i class="bi bi-pie-chart-fill"></i> Đã cọc</span>
+                                    <?php else: ?>
+                                        <span class="text-muted small"><i class="bi bi-circle"></i> Chưa TT</span>
+                                    <?php endif; ?>
+                                </td>
 
-                            <td class="text-end pe-4">
-                                <a href="<?php echo BASE_URL; ?>/booking/detail/<?php echo $b['MaBooking']; ?>" class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                            </td>
-                        </tr>
+                                <td class="text-end pe-4">
+                                    <a href="<?php echo BASE_URL; ?>/booking/detail/<?php echo $b['MaBooking']; ?>"
+                                        class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </tbody>
@@ -114,5 +119,6 @@
         </div>
     </div>
     <div class="card-footer bg-white border-0 py-3">
-        </div>
+        <?php include '../app/Views/layouts/pagination.php'; ?>
+    </div>
 </div>

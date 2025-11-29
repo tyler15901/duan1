@@ -121,7 +121,7 @@
     <div class="d-flex" id="wrapper">
         <div class="border-end" id="sidebar-wrapper">
             <a href="<?php echo BASE_URL; ?>/dashboard/index" class="sidebar-heading">
-                <i class="bi bi-airplane-engines-fill text-warning"></i> TOUR ADMIN
+                <i class="bi bi-airplane-engines-fill text-warning"></i> ADMIN PANEL
             </a>
             
             <div class="list-group list-group-flush mt-3">
@@ -198,9 +198,7 @@
                 <?php require_once '../app/Views/' . $content_view . '.php'; ?>
             </div>
             
-            <footer class="text-center text-muted small py-3 mt-auto">
-                &copy; <?php echo date('Y'); ?> Tour Management System. Design by <b>Frontend Team</b>.
-            </footer>
+            <footer class="text-center text-muted small py-3 mt-auto"> POLY TRAVEL</footer>
         </div>
     </div>
 
