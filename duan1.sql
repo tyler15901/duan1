@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 29, 2025 at 10:18 PM
+-- Generation Time: Dec 01, 2025 at 11:03 PM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.26
 
@@ -243,7 +243,8 @@ INSERT INTO `booking` (`MaBooking`, `MaBookingCode`, `MaLichKhoiHanh`, `MaTour`,
 (90, 'BK185', 18, 6, 90, '2026-01-20', '2026-01-30', 4, 20000000.00, NULL, 'Đã xác nhận', 'Đã thanh toán', NULL, NULL, NULL),
 (91, NULL, 3, 1, 91, '2025-11-30', '2026-01-30', 3, 30000000.00, 30000000.00, 'Đã xác nhận', 'Đã thanh toán', NULL, 'Đơn tạo mới từ Admin', NULL),
 (92, NULL, 4, 2, 92, '2025-11-30', '2025-10-30', 4, 20000000.00, 20000000.00, 'Đã xác nhận', 'Đã thanh toán', NULL, 'Đơn tạo mới từ Admin', NULL),
-(93, 'BK2025000093', 14, 5, 93, '2025-11-30', '2025-12-07', 3, 30000000.00, 30000000.00, 'Đã xác nhận', 'Đã thanh toán', NULL, 'Đơn tạo mới từ Admin', NULL);
+(93, 'BK2025000093', 14, 5, 93, '2025-11-30', '2025-12-07', 3, 30000000.00, 30000000.00, 'Đã xác nhận', 'Đã thanh toán', NULL, 'Đơn tạo mới từ Admin', NULL),
+(94, 'BK2025000094', 6, 2, 95, '2025-12-02', '2026-01-30', 4, 344444443.00, 344444443.00, 'Đã xác nhận', 'Đã thanh toán', NULL, 'Đặt: 3 Lớn, 1 Trẻ em', NULL);
 
 --
 -- Triggers `booking`
@@ -382,7 +383,8 @@ INSERT INTO `chitietkhachbooking` (`MaChiTiet`, `MaBooking`, `MaKhachHang`, `Loa
 (62, 87, 87, 'Người lớn', '00123456789', NULL, 'Trưởng đoàn'),
 (63, 88, 88, 'Người lớn', '00123456789', NULL, 'Trưởng đoàn'),
 (64, 89, 89, 'Người lớn', '00123456789', NULL, 'Trưởng đoàn'),
-(65, 90, 90, 'Người lớn', '00123456789', NULL, 'Trưởng đoàn');
+(65, 90, 90, 'Người lớn', '00123456789', NULL, 'Trưởng đoàn'),
+(66, 11, 94, 'Người lớn', '11111111111111', NULL, '');
 
 -- --------------------------------------------------------
 
@@ -554,7 +556,9 @@ INSERT INTO `khachhang` (`MaKhachHang`, `HoTen`, `GioiTinh`, `SoDienThoai`, `Ema
 (90, 'Khách 18_5', NULL, '0956660684', NULL, NULL, NULL, '2025-11-30 04:29:49'),
 (91, 'thai', NULL, '0968413287', NULL, NULL, NULL, '2025-11-30 04:53:45'),
 (92, 'mai', NULL, '0822501239', NULL, NULL, NULL, '2025-11-30 05:03:08'),
-(93, 'awdwa', NULL, '0123456789', NULL, NULL, NULL, '2025-11-30 05:08:11');
+(93, 'awdwa', NULL, '0123456789', NULL, NULL, NULL, '2025-11-30 05:08:11'),
+(94, 'aaaaaaaaa', NULL, NULL, NULL, NULL, '11111111111111', '2025-12-02 04:21:52'),
+(95, 'aaaaaaaaa', NULL, '33333333333333', '', '', NULL, '2025-12-02 06:01:17');
 
 -- --------------------------------------------------------
 
@@ -571,32 +575,34 @@ CREATE TABLE `lichkhoihanh` (
   `GioTapTrung` time DEFAULT NULL,
   `DiaDiemTapTrung` varchar(300) DEFAULT NULL,
   `TrangThai` varchar(50) DEFAULT 'Đang chuẩn bị',
-  `SoKhachHienTai` int DEFAULT '0'
+  `SoKhachHienTai` int DEFAULT '0',
+  `GiaNguoiLon` decimal(18,2) DEFAULT '0.00',
+  `GiaTreEm` decimal(18,2) DEFAULT '0.00'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `lichkhoihanh`
 --
 
-INSERT INTO `lichkhoihanh` (`MaLichKhoiHanh`, `MaTour`, `LichCode`, `NgayKhoiHanh`, `NgayKetThuc`, `GioTapTrung`, `DiaDiemTapTrung`, `TrangThai`, `SoKhachHienTai`) VALUES
-(1, 1, 'LKH1162', '2025-10-30', '2025-11-02', '06:00:00', 'Nhà Hát Lớn', 'Hoàn tất', 8),
-(2, 1, 'LKH1229', '2025-12-07', '2025-12-10', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 23),
-(3, 1, 'LKH1356', '2026-01-30', '2026-02-02', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 26),
-(4, 2, 'LKH2141', '2025-10-30', '2025-11-02', '06:00:00', 'Nhà Hát Lớn', 'Hoàn tất', 32),
-(5, 2, 'LKH2274', '2025-12-07', '2025-12-10', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 33),
-(6, 2, 'LKH2315', '2026-01-30', '2026-02-02', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 34),
-(7, 3, 'LKH3169', '2025-10-30', '2025-11-02', '06:00:00', 'Nhà Hát Lớn', 'Hoàn tất', 10),
-(8, 3, 'LKH3242', '2025-12-07', '2025-12-10', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 30),
-(9, 3, 'LKH3341', '2026-01-30', '2026-02-02', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 40),
-(10, 4, 'LKH4160', '2025-10-30', '2025-11-02', '06:00:00', 'Nhà Hát Lớn', 'Hoàn tất', 20),
-(11, 4, 'LKH4229', '2025-12-07', '2025-12-10', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 27),
-(12, 4, 'LKH4328', '2026-01-30', '2026-02-02', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 41),
-(13, 5, 'LKH518', '2025-10-30', '2025-11-02', '06:00:00', 'Nhà Hát Lớn', 'Hoàn tất', 52),
-(14, 5, 'LKH5231', '2025-12-07', '2025-12-10', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 19),
-(15, 5, 'LKH5371', '2026-01-30', '2026-02-02', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 38),
-(16, 6, 'LKH6194', '2025-10-30', '2025-11-02', '06:00:00', 'Nhà Hát Lớn', 'Hoàn tất', 33),
-(17, 6, 'LKH6266', '2025-12-07', '2025-12-10', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 10),
-(18, 6, 'LKH6318', '2026-01-30', '2026-02-02', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 18);
+INSERT INTO `lichkhoihanh` (`MaLichKhoiHanh`, `MaTour`, `LichCode`, `NgayKhoiHanh`, `NgayKetThuc`, `GioTapTrung`, `DiaDiemTapTrung`, `TrangThai`, `SoKhachHienTai`, `GiaNguoiLon`, `GiaTreEm`) VALUES
+(1, 1, 'LKH1162', '2025-10-30', '2025-11-02', '06:00:00', 'Nhà Hát Lớn', 'Hoàn tất', 8, 0.00, 0.00),
+(2, 1, 'LKH1229', '2025-12-07', '2025-12-10', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 23, 0.00, 0.00),
+(3, 1, 'LKH1356', '2026-01-20', '2026-01-23', '11:11:00', 'aaaaaaaa', 'Nhận khách', 26, 11101111.00, 1110111.00),
+(4, 2, 'LKH2141', '2025-10-30', '2025-11-02', '06:00:00', 'Nhà Hát Lớn', 'Hoàn tất', 32, 0.00, 0.00),
+(5, 2, 'LKH2274', '2025-12-07', '2025-12-10', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 33, 0.00, 0.00),
+(6, 2, 'LKH2315', '2026-01-30', '2026-02-02', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 34, 111111111.00, 11111110.00),
+(7, 3, 'LKH3169', '2025-10-30', '2025-11-02', '06:00:00', 'Nhà Hát Lớn', 'Hoàn tất', 10, 0.00, 0.00),
+(8, 3, 'LKH3242', '2025-12-07', '2025-12-10', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 30, 0.00, 0.00),
+(9, 3, 'LKH3341', '2026-01-30', '2026-02-02', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 40, 0.00, 0.00),
+(10, 4, 'LKH4160', '2025-10-30', '2025-11-02', '06:00:00', 'Nhà Hát Lớn', 'Hoàn tất', 20, 0.00, 0.00),
+(11, 4, 'LKH4229', '2025-12-07', '2025-12-10', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 27, 0.00, 0.00),
+(12, 4, 'LKH4328', '2026-01-30', '2026-02-02', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 41, 0.00, 0.00),
+(13, 5, 'LKH518', '2025-10-30', '2025-11-02', '06:00:00', 'Nhà Hát Lớn', 'Hoàn tất', 52, 0.00, 0.00),
+(14, 5, 'LKH5231', '2025-12-07', '2025-12-10', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 19, 0.00, 0.00),
+(15, 5, 'LKH5371', '2026-01-30', '2026-02-02', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 38, 0.00, 0.00),
+(16, 6, 'LKH6194', '2025-10-30', '2025-11-02', '06:00:00', 'Nhà Hát Lớn', 'Hoàn tất', 33, 0.00, 0.00),
+(17, 6, 'LKH6266', '2025-12-07', '2025-12-10', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 10, 0.00, 0.00),
+(18, 6, 'LKH6318', '2026-01-30', '2026-02-02', '06:00:00', 'Nhà Hát Lớn', 'Nhận khách', 18, 0.00, 0.00);
 
 -- --------------------------------------------------------
 
@@ -782,14 +788,10 @@ INSERT INTO `phanbonhansu` (`MaPhanBo`, `MaLichKhoiHanh`, `MaNhanSu`, `VaiTro`) 
 (40, 1, 16, 'Hướng dẫn viên'),
 (41, 2, 12, 'Hướng dẫn viên'),
 (42, 2, 2, 'Hướng dẫn viên'),
-(43, 3, 2, 'Hướng dẫn viên'),
-(44, 3, 15, 'Hướng dẫn viên'),
 (45, 4, 13, 'Hướng dẫn viên'),
 (46, 4, 15, 'Hướng dẫn viên'),
 (47, 5, 9, 'Hướng dẫn viên'),
 (48, 5, 18, 'Hướng dẫn viên'),
-(49, 6, 18, 'Hướng dẫn viên'),
-(50, 6, 6, 'Hướng dẫn viên'),
 (51, 7, 5, 'Hướng dẫn viên'),
 (52, 8, 13, 'Hướng dẫn viên'),
 (53, 8, 2, 'Hướng dẫn viên'),
@@ -810,7 +812,11 @@ INSERT INTO `phanbonhansu` (`MaPhanBo`, `MaLichKhoiHanh`, `MaNhanSu`, `VaiTro`) 
 (68, 16, 13, 'Hướng dẫn viên'),
 (69, 16, 7, 'Hướng dẫn viên'),
 (70, 17, 19, 'Hướng dẫn viên'),
-(71, 18, 8, 'Hướng dẫn viên');
+(71, 18, 8, 'Hướng dẫn viên'),
+(74, 3, 2, 'Hướng dẫn viên'),
+(75, 3, 15, 'Hướng dẫn viên'),
+(76, 6, 6, 'Hướng dẫn viên'),
+(77, 6, 18, 'Hướng dẫn viên');
 
 -- --------------------------------------------------------
 
@@ -825,6 +831,14 @@ CREATE TABLE `phan_bo_tai_nguyen` (
   `NgaySuDung` date DEFAULT NULL,
   `GhiChu` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `phan_bo_tai_nguyen`
+--
+
+INSERT INTO `phan_bo_tai_nguyen` (`MaPhanBo`, `MaLichKhoiHanh`, `MaTaiNguyen`, `NgaySuDung`, `GhiChu`) VALUES
+(2, 3, 1, NULL, NULL),
+(3, 3, 3, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -878,7 +892,7 @@ INSERT INTO `tour` (`MaTour`, `MaLoaiTour`, `TenTour`, `HinhAnh`, `MoTa`, `Chinh
 (3, 1, 'Phú Quốc - Đảo Ngọc (3N2Đ)', 'phuquoc.jpg', NULL, NULL, 3, 40, 'Hoạt động', '2025-11-30 04:29:49'),
 (4, 2, 'Bangkok - Pattaya (Thái Lan 5N4Đ)', 'thailan.jpg', NULL, NULL, 5, 40, 'Hoạt động', '2025-11-30 04:29:49'),
 (5, 2, 'Seoul - Nami (Hàn Quốc 5N4Đ)', 'hanquoc.jpg', NULL, NULL, 5, 30, 'Hoạt động', '2025-11-30 04:29:49'),
-(6, 2, 'Tokyo - Osaka (Nhật Bản 6N5Đ)', 'nhatban.jpg', NULL, NULL, 6, 30, 'Hoạt động', '2025-11-30 04:29:49');
+(6, 2, 'Tokyo - Osaka (Nhật Bản 6N5Đ)', 'nhatban.jpg', '', '', 6, 30, 'Hoạt động', '2025-11-30 04:29:49');
 
 -- --------------------------------------------------------
 
@@ -1099,7 +1113,7 @@ ALTER TABLE `yeucaudacbiet`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `MaBooking` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+  MODIFY `MaBooking` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
 
 --
 -- AUTO_INCREMENT for table `checkinkhach`
@@ -1117,7 +1131,7 @@ ALTER TABLE `chiphi`
 -- AUTO_INCREMENT for table `chitietkhachbooking`
 --
 ALTER TABLE `chitietkhachbooking`
-  MODIFY `MaChiTiet` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `MaChiTiet` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT for table `filedinhkem`
@@ -1147,7 +1161,7 @@ ALTER TABLE `hinhanhtour`
 -- AUTO_INCREMENT for table `khachhang`
 --
 ALTER TABLE `khachhang`
-  MODIFY `MaKhachHang` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+  MODIFY `MaKhachHang` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
 
 --
 -- AUTO_INCREMENT for table `lichkhoihanh`
@@ -1195,13 +1209,13 @@ ALTER TABLE `nha_cung_cap`
 -- AUTO_INCREMENT for table `phanbonhansu`
 --
 ALTER TABLE `phanbonhansu`
-  MODIFY `MaPhanBo` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `MaPhanBo` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
 
 --
 -- AUTO_INCREMENT for table `phan_bo_tai_nguyen`
 --
 ALTER TABLE `phan_bo_tai_nguyen`
-  MODIFY `MaPhanBo` int NOT NULL AUTO_INCREMENT;
+  MODIFY `MaPhanBo` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `tai_nguyen_ncc`
