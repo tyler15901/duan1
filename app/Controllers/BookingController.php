@@ -1,30 +1,28 @@
 <?php
 class BookingController extends Controller
 {
-
     public function __construct()
     {
-        // Gọi hàm kiểm tra quyền ngay khi khởi tạo Controller
         require_once '../app/Core/Auth.php';
         Auth::checkAdmin();
     }
+
     // Danh sách đơn hàng
     public function index()
     {
         $model = $this->model('BookingModel');
-
-        // Nhận thêm status từ URL
         $keyword = isset($_GET['q']) ? trim($_GET['q']) : '';
-        $status = isset($_GET['status']) ? $_GET['status'] : ''; // <--- Thêm dòng này
+        $status = isset($_GET['status']) ? $_GET['status'] : '';
+        $payment_status = isset($_GET['payment_status']) ? $_GET['payment_status'] : ''; // Thêm lọc thanh toán
 
         $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
         $limit = 10;
         $offset = ($page - 1) * $limit;
 
-        // Gửi cả status xuống Model
         $filters = [
             'keyword' => $keyword,
-            'status' => $status
+            'status' => $status,
+            'payment_status' => $payment_status
         ];
 
         $bookings = $model->getAllBookings($filters, $limit, $offset);
@@ -33,11 +31,12 @@ class BookingController extends Controller
         $data = [
             'bookings' => $bookings,
             'pagination' => [
-                'current_page' => $page, // Sửa 'current' thành 'current_page' cho đồng bộ với View
+                'current_page' => $page,
                 'total_pages' => ceil($total / $limit),
-                'total_records' => $total, // Thêm dòng này để hiện tổng số bản ghi
+                'total_records' => $total,
                 'keyword' => $keyword,
-                'status' => $status // Gửi lại status để View giữ trạng thái select box
+                'status' => $status,
+                'payment_status' => $payment_status
             ]
         ];
         $this->view('admin/bookings/index', $data);
@@ -49,46 +48,41 @@ class BookingController extends Controller
         $model = $this->model('BookingModel');
         $data = [
             'booking' => $model->getBookingById($id),
-            'guests' => $model->getGuestList($id)
+            'guests' => $model->getGuestList($id) // Hàm này lấy từ bảng chitietkhachbooking
         ];
         $this->view('admin/bookings/detail', $data);
     }
 
-    // Xử lý cập nhật (Trạng thái + File danh sách)
+    // Xử lý cập nhật (Trạng thái + Thanh toán)
     public function update($id) {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $model = $this->model('BookingModel');
             
-            // 1. Lấy thông tin đơn hàng hiện tại để biết Tổng tiền
             $currentBooking = $model->getBookingById($id);
             $tongTien = (float)$currentBooking['TongTien'];
             $paymentStatus = $_POST['thanh_toan'];
-            $tienCoc = (float)$currentBooking['TienCoc']; // Mặc định giữ nguyên cọc cũ
+            $tienCoc = (float)$currentBooking['TienCoc']; 
 
-            // 2. Logic cập nhật Tiền Cọc dựa trên Trạng thái mới
+            // Logic tự động cập nhật tiền cọc
             if ($paymentStatus == 'Đã thanh toán') {
-                $tienCoc = $tongTien; // Update cọc = tổng tiền
+                $tienCoc = $tongTien; 
             } elseif ($paymentStatus == 'Chưa thanh toán') {
                 $tienCoc = 0;
             } 
-            // Nếu là 'Đã cọc' thì giữ nguyên số tiền cọc hiện có trong DB (hoặc tính 50% nếu muốn cứng nhắc)
 
-            // 3. Xử lý file upload (Giữ nguyên code cũ)
-            $fileName = null;
+            $fileName = $currentBooking['FileDanhSachKhach']; // Giữ file cũ
             if (!empty($_FILES['guest_file']['name'])) {
                 $fileName = time() . '_' . $_FILES['guest_file']['name'];
                 move_uploaded_file($_FILES['guest_file']['tmp_name'], '../public/assets/uploads/files/' . $fileName);
             }
 
-            // 4. Chuẩn bị dữ liệu update
             $data = [
                 'status' => $_POST['trang_thai'],
                 'payment_status' => $paymentStatus,
                 'file' => $fileName,
-                'tien_coc' => $tienCoc // Thêm tham số này để update vào DB
+                'tien_coc' => $tienCoc
             ];
 
-            // 5. Gọi Model (Cần sửa Model chút xíu để nhận tien_coc)
             if ($model->updateBooking($id, $data)) {
                 echo "<script>alert('Cập nhật đơn hàng thành công!'); window.location.href='" . BASE_URL . "/booking/detail/$id';</script>";
             } else {
@@ -97,7 +91,7 @@ class BookingController extends Controller
         }
     }
 
-    // 1. Hiển thị Form tạo đơn (URL: /booking/create)
+    // Hiển thị Form tạo đơn
     public function create()
     {
         $model = $this->model('BookingModel');
@@ -107,66 +101,89 @@ class BookingController extends Controller
         $this->view('admin/bookings/create', $data);
     }
 
-    // 2. API lấy lịch theo tour (AJAX gọi vào đây)
-    // File: app/Controllers/BookingController.php
-
+    // API lấy lịch theo tour
     public function get_schedules()
     {
-        error_reporting(0); // Tắt báo lỗi để không làm hỏng JSON
+        error_reporting(0);
         if (isset($_GET['tour_id'])) {
             $model = $this->model('BookingModel');
             $schedules = $model->getSchedulesByTour($_GET['tour_id']);
-
-            // QUAN TRỌNG: Xóa sạch bộ nhớ đệm đầu ra để đảm bảo JSON sạch
-            if (ob_get_length())
-                ob_clean();
-
+            if (ob_get_length()) ob_clean();
             header('Content-Type: application/json');
             echo json_encode($schedules);
             exit;
         }
     }
 
-    // 3. Xử lý Lưu Đơn Hàng
+ // Xử lý Lưu Đơn Hàng Mới
     public function store()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $model = $this->model('BookingModel');
 
-            // A. Xử lý khách hàng (Tự động tìm hoặc thêm mới)
+            // 1. Xử lý khách hàng
             $customerId = $model->getOrCreateCustomer($_POST['ho_ten'], $_POST['so_dien_thoai']);
 
-            // 1. Xử lý chuẩn hóa số tiền (Tránh lỗi chuỗi rỗng)
-            $tongTien = !empty($_POST['tong_tien']) ? (float) $_POST['tong_tien'] : 0;
+            // 2. Tính tổng số khách
+            $sl_nguoi_lon = (int)$_POST['sl_nguoi_lon'];
+            $sl_tre_em = (int)$_POST['sl_tre_em'];
+            $totalPax = $sl_nguoi_lon + $sl_tre_em;
 
-            // 2. Tính tiền cọc dựa trên số tiền đã chuẩn hóa
+            // 3. Lấy tổng tiền đã tính từ client (hoặc tính lại server để bảo mật hơn)
+            $tongTien = (float)$_POST['tong_tien'];
+
+            // 4. Tính cọc
             $tienCoc = 0;
             if ($_POST['trang_thai_tt'] == 'Đã cọc') {
-                $tienCoc = $tongTien * 0.5; // Cọc 50%
+                $tienCoc = $tongTien * 0.5;
             } elseif ($_POST['trang_thai_tt'] == 'Đã thanh toán') {
-                $tienCoc = $tongTien; // Đã thanh toán hết thì coi như đã trả đủ
+                $tienCoc = $tongTien;
             }
 
-            // B. Chuẩn bị dữ liệu Booking
+            // 5. Chuẩn bị dữ liệu
             $data = [
                 'tour' => $_POST['tour_id'],
                 'lich' => $_POST['lich_id'],
                 'khach' => $customerId,
-                'sl' => !empty($_POST['so_luong']) ? $_POST['so_luong'] : 1, // Validate cả số lượng
-                'tien' => $tongTien,  // Đã xử lý ở trên (không bao giờ rỗng)
-                'coc' => $tienCoc,    // Đã xử lý ở trên
+                'sl' => $totalPax, // Lưu tổng số người
+                'tien' => $tongTien,
+                'coc' => $tienCoc,
                 'tt_thanhtoan' => $_POST['trang_thai_tt'],
-                'ghichu' => "Đơn tạo mới từ Admin"
+                'ghichu' => "Đặt: $sl_nguoi_lon Lớn, $sl_tre_em Trẻ em" // Ghi chú lại cơ cấu khách
             ];
 
-            // C. Lưu vào DB
             if ($model->createBooking($data)) {
-                // Thành công -> Chuyển hướng về trang danh sách
                 header("Location: " . BASE_URL . "/booking/index");
             } else {
                 echo "Lỗi tạo đơn hàng!";
             }
         }
+    }
+
+    // --- [MỚI] HÀM THÊM KHÁCH VÀO CHI TIẾT ---
+    public function store_guest($bookingId) {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $model = $this->model('BookingModel');
+            
+            $data = [
+                'ho_ten' => $_POST['ho_ten'],
+                'loai_khach' => $_POST['loai_khach'],
+                'so_giay_to' => $_POST['so_giay_to'],
+                'ghi_chu' => $_POST['ghi_chu']
+            ];
+
+            // Gọi Model xử lý (Tạo khách -> Thêm vào chi tiết)
+            $model->addGuestToBooking($bookingId, $data);
+            
+            header("Location: " . BASE_URL . "/booking/detail/" . $bookingId);
+        }
+    }
+
+    // --- [MỚI] HÀM XÓA KHÁCH KHỎI CHI TIẾT ---
+    public function delete_guest($guestId, $bookingId) {
+        $model = $this->model('BookingModel');
+        $model->removeGuestFromBooking($guestId);
+        header("Location: " . BASE_URL . "/booking/detail/" . $bookingId);
     }
 }
 ?>

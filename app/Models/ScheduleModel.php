@@ -23,16 +23,13 @@ class ScheduleModel extends Model {
 
     // --- HÀM TẠO LỊCH (QUAN TRỌNG) ---
     public function createSchedule($data, $resources = [], $staffs = []) {
-        try {
-            // 1. Bắt đầu Transaction
-            $this->conn->beginTransaction();
-
-            // 2. Tạo mã lịch tự động (VD: LKH + Timestamp)
+        try{
+        $this->conn->beginTransaction();
             $lichCode = 'LKH' . time();
 
-            // 3. Insert vào bảng Lịch Khởi Hành
-            $sql = "INSERT INTO lichkhoihanh (MaTour, LichCode, NgayKhoiHanh, NgayKetThuc, GioTapTrung, DiaDiemTapTrung, SoChoHienTai, TrangThai) 
-                    VALUES (:tour_id, :code, :start, :end, :time, :place, :seats, 'Nhận khách')";
+            // [CẬP NHẬT SQL] Thêm cột GiaNguoiLon, GiaTreEm
+            $sql = "INSERT INTO lichkhoihanh (MaTour, LichCode, NgayKhoiHanh, NgayKetThuc, GioTapTrung, DiaDiemTapTrung, SoChoHienTai, TrangThai, GiaNguoiLon, GiaTreEm) 
+                    VALUES (:tour_id, :code, :start, :end, :time, :place, 0, 'Nhận khách', :p_adult, :p_child)";
             
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([
@@ -42,7 +39,8 @@ class ScheduleModel extends Model {
                 'end'     => $data['end_date'],
                 'time'    => $data['meeting_time'],
                 'place'   => $data['meeting_place'],
-                'seats'   => 0 // Mới tạo chưa có khách
+                'p_adult' => $data['price_adult'], // Bind giá
+                'p_child' => $data['price_child']  // Bind giá
             ]);
             
             $lichId = $this->conn->lastInsertId();
@@ -134,11 +132,13 @@ class ScheduleModel extends Model {
 
     // Lấy chi tiết tài nguyên (để hiển thị trang Show)
     public function getAssignedResourcesDetail($scheduleId) {
-        $sql = "SELECT tn.*, ncc.TenNhaCungCap 
+        // [ĐÃ SỬA] Thêm ncc.LoaiCungCap vào câu SELECT
+        $sql = "SELECT tn.*, ncc.TenNhaCungCap, ncc.LoaiCungCap 
                 FROM phan_bo_tai_nguyen p 
                 JOIN tai_nguyen_ncc tn ON p.MaTaiNguyen = tn.MaTaiNguyen
                 JOIN nha_cung_cap ncc ON tn.MaNhaCungCap = ncc.MaNhaCungCap
                 WHERE p.MaLichKhoiHanh = ?";
+        
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([$scheduleId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -161,7 +161,8 @@ class ScheduleModel extends Model {
             // 1. Update thông tin chính
             $sql = "UPDATE lichkhoihanh SET 
                     MaTour = :tour_id, NgayKhoiHanh = :start, NgayKetThuc = :end, 
-                    GioTapTrung = :time, DiaDiemTapTrung = :place, TrangThai = :status 
+                    GioTapTrung = :time, DiaDiemTapTrung = :place, TrangThai = :status,
+                    GiaNguoiLon = :p_adult, GiaTreEm = :p_child
                     WHERE MaLichKhoiHanh = :id";
             
             $stmt = $this->conn->prepare($sql);
@@ -172,6 +173,8 @@ class ScheduleModel extends Model {
                 'time'    => $data['meeting_time'],
                 'place'   => $data['meeting_place'],
                 'status'  => $data['status'],
+                'p_adult' => $data['price_adult'],
+                'p_child' => $data['price_child'],
                 'id'      => $id
             ]);
 

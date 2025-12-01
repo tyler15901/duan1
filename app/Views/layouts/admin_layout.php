@@ -1,123 +1,126 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tour Admin Pro</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <title>Quản Trị Tour - Travel Pro</title>
+
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/style.css">
 </head>
 
 <body>
-    <div class="d-flex" id="wrapper">
-        <div class="border-end" id="sidebar-wrapper">
-            <a href="<?php echo BASE_URL; ?>/dashboard/index" class="sidebar-heading text-decoration-none text-white d-flex align-items-center gap-2">
-                <div class="bg-primary rounded-3 p-1">
-                    <i class="bi bi-send-fill text-white"></i> 
-                </div>
-                <span>TRAVEL PRO</span>
+
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top d-flex align-items-center justify-content-between">
+        <a href="<?php echo BASE_URL; ?>/dashboard/index" class="sidebar-heading text-decoration-none border-0">
+            <i class="bi bi-grid-fill"></i>
+            <span class="d-none d-lg-block">TRAVEL PRO</span>
+        </a>
+
+        <i class="bi bi-list toggle-sidebar-btn d-lg-none ms-2 fs-3" id="menu-toggle"></i>
+
+        <div class="search-bar ms-auto me-3 d-none d-md-block">
+            <form class="d-flex align-items-center position-relative">
+                <input class="form-control" type="text" placeholder="Tìm kiếm..." style="width: 250px; padding-left: 35px;">
+                <i class="bi bi-search position-absolute text-muted" style="left: 10px;"></i>
+            </form>
+        </div>
+
+        <div class="dropdown me-4">
+            <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="https://ui-avatars.com/api/?name=<?php echo $_SESSION['fullname'] ?? 'Admin'; ?>&background=0d6efd&color=fff" alt="mdo" width="36" height="36" class="rounded-circle me-2">
+                <span class="d-none d-md-inline fw-bold small text-secondary"><?php echo $_SESSION['fullname'] ?? 'Admin'; ?></span>
             </a>
-            
-            <div class="list-group list-group-flush mt-3">
-                <a class="list-group-item list-group-item-action" href="<?php echo BASE_URL; ?>/dashboard/index">
-                    <i class="bi bi-grid-1x2-fill"></i> Tổng quan
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="dropdownUser1">
+                <li><div class="dropdown-header"><h6>Xin chào, <?php echo $_SESSION['fullname'] ?? 'Admin'; ?>!</h6></div></li>
+                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>/profile/index"><i class="bi bi-person me-2"></i> Hồ sơ</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="<?php echo BASE_URL; ?>/auth/logout"><i class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="d-flex" id="wrapper" style="margin-top: 60px;">
+        
+        <div class="border-end bg-white" id="sidebar-wrapper">
+            <div class="list-group list-group-flush py-3">
+                
+                <a class="list-group-item list-group-item-action <?php echo (strpos($_SERVER['REQUEST_URI'], 'dashboard') !== false) ? 'active' : ''; ?>" 
+                   href="<?php echo BASE_URL; ?>/dashboard/index">
+                    <i class="bi bi-grid"></i> Dashboard
                 </a>
 
                 <div class="sidebar-divider">Điều hành</div>
                 
-                <a class="list-group-item list-group-item-action" href="<?php echo BASE_URL; ?>/booking/create">
-                    <i class="bi bi-plus-circle-fill text-primary"></i> <span class="text-white">Tạo Đơn Mới</span>
+                <a class="list-group-item list-group-item-action <?php echo (strpos($_SERVER['REQUEST_URI'], 'booking/create') !== false) ? 'active' : ''; ?>" 
+                   href="<?php echo BASE_URL; ?>/booking/create">
+                    <i class="bi bi-plus-circle"></i> Tạo Đơn Mới
                 </a>
                 
-                <a class="list-group-item list-group-item-action" href="<?php echo BASE_URL; ?>/booking/index">
+                <a class="list-group-item list-group-item-action <?php echo (strpos($_SERVER['REQUEST_URI'], 'booking/index') !== false) ? 'active' : ''; ?>" 
+                   href="<?php echo BASE_URL; ?>/booking/index">
                     <i class="bi bi-receipt"></i> Đơn hàng
                 </a>
 
-                <a class="list-group-item list-group-item-action" href="<?php echo BASE_URL; ?>/schedule/index">
-                    <i class="bi bi-calendar2-week-fill"></i> Lịch khởi hành
+                <a class="list-group-item list-group-item-action <?php echo (strpos($_SERVER['REQUEST_URI'], 'schedule') !== false) ? 'active' : ''; ?>" 
+                   href="<?php echo BASE_URL; ?>/schedule/index">
+                    <i class="bi bi-calendar-check"></i> Lịch khởi hành
                 </a>
 
                 <div class="sidebar-divider">Dữ liệu</div>
                 
-                <a class="list-group-item list-group-item-action" href="<?php echo BASE_URL; ?>/tour/index">
-                    <i class="bi bi-map-fill"></i> Sản phẩm Tour
+                <a class="list-group-item list-group-item-action <?php echo (strpos($_SERVER['REQUEST_URI'], 'tour/') !== false) ? 'active' : ''; ?>" 
+                   href="<?php echo BASE_URL; ?>/tour/index">
+                    <i class="bi bi-map"></i> Sản phẩm Tour
                 </a>
                 
-                <a class="list-group-item list-group-item-action" href="<?php echo BASE_URL; ?>/supplier/index">
-                    <i class="bi bi-buildings-fill"></i> Đối tác
+                <a class="list-group-item list-group-item-action <?php echo (strpos($_SERVER['REQUEST_URI'], 'staff') !== false) ? 'active' : ''; ?>" 
+                   href="<?php echo BASE_URL; ?>/staff/index">
+                    <i class="bi bi-person-badge"></i> Hướng dẫn viên
+                </a>
+                
+                <a class="list-group-item list-group-item-action <?php echo (strpos($_SERVER['REQUEST_URI'], 'supplier') !== false) ? 'active' : ''; ?>" 
+                   href="<?php echo BASE_URL; ?>/supplier/index">
+                    <i class="bi bi-buildings"></i> Đối tác / NCC
                 </a>
 
-                <a class="list-group-item list-group-item-action" href="<?php echo BASE_URL; ?>/staff/index">
-                    <i class="bi bi-people-fill"></i> Nhân sự
-                </a>
+                <div class="sidebar-divider">Thống kê</div>
 
-                <div class="sidebar-divider">Tài chính</div>
-
-                <a class="list-group-item list-group-item-action" href="<?php echo BASE_URL; ?>/report/index">
-                    <i class="bi bi-bar-chart-fill"></i> Báo cáo
+                <a class="list-group-item list-group-item-action <?php echo (strpos($_SERVER['REQUEST_URI'], 'report') !== false) ? 'active' : ''; ?>" 
+                   href="<?php echo BASE_URL; ?>/report/index">
+                    <i class="bi bi-bar-chart"></i> Báo cáo
                 </a>
-            </div>
-            
-            <div class="mt-auto p-3 border-top border-secondary">
-                <div class="d-flex align-items-center text-white">
-                    <img src="https://ui-avatars.com/api/?name=<?php echo $_SESSION['fullname'] ?? 'Admin'; ?>&background=random" class="rounded-circle me-2" width="40">
-                    <div class="small">
-                        <div class="fw-bold"><?php echo $_SESSION['fullname'] ?? 'Admin'; ?></div>
-                        <div class="text-muted" style="font-size: 0.8em;">Quản trị viên</div>
-                    </div>
-                    <a href="<?php echo BASE_URL; ?>/auth/logout" class="ms-auto text-secondary hover-danger" title="Đăng xuất">
-                        <i class="bi bi-box-arrow-right fs-5"></i>
-                    </a>
-                </div>
             </div>
         </div>
-
         <div id="page-content-wrapper">
-            <nav class="navbar navbar-expand-lg navbar-custom border-bottom">
-                <div class="container-fluid">
-                    <button class="btn btn-light" id="sidebarToggle"><i class="bi bi-list"></i></button>
-                    
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="text-muted small">
-                            <i class="bi bi-clock"></i> <?php echo date('H:i - d/m/Y'); ?>
-                        </div>
-                        <a href="<?php echo BASE_URL; ?>" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                            <i class="bi bi-globe"></i> Xem trang chủ
-                        </a>
-                    </div>
-                </div>
-            </nav>
-
             <div class="container-fluid px-4 py-4">
-                <?php require_once '../app/Views/' . $content_view . '.php'; ?>
+                <?php 
+                    if (file_exists('../app/Views/' . $content_view . '.php')) {
+                        require_once '../app/Views/' . $content_view . '.php'; 
+                    } else {
+                        echo '<div class="alert alert-warning">File view not found: '.$content_view.'</div>';
+                    }
+                ?>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    
     <script>
-        // Toggle Sidebar Script
-        const sidebarToggle = document.querySelector('#sidebarToggle');
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', event => {
-                event.preventDefault();
-                document.body.classList.toggle('sb-sidenav-toggled');
-                document.getElementById('wrapper').classList.toggle('toggled');
-            });
-        }
-        
-        // Active Link Script
-        const currentUrl = window.location.href;
-        document.querySelectorAll('.list-group-item').forEach(link => {
-            if(currentUrl.includes(link.href)) link.classList.add('active');
-        });
+        // Script toggle sidebar đơn giản
+        var el = document.getElementById("wrapper");
+        var toggleButton = document.getElementById("menu-toggle");
+
+        toggleButton.onclick = function () {
+            el.classList.toggle("toggled");
+        };
     </script>
 </body>
 </html>

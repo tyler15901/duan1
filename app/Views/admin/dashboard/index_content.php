@@ -1,241 +1,233 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h4 class="mb-0 text-muted small">Dashboard</h4>
-        <h2 class="text-primary fw-bold mb-0">Tổng quan Hệ thống</h2>
-    </div>
-    <div>
-        <span class="text-muted me-3 small"><i class="bi bi-calendar-check"></i> Hôm nay:
-            <b><?php echo date('d/m/Y'); ?></b></span>
-        <a href="<?php echo BASE_URL; ?>/booking/create" class="btn btn-primary shadow-sm">
-            <i class="bi bi-plus-lg"></i> Tạo Đơn Mới
-        </a>
-    </div>
+<div class="pagetitle mb-4">
+    <h1>Tổng quan hệ thống</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </nav>
 </div>
 
-<div class="row g-4 mb-4">
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0 border-start border-4 border-primary h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text-uppercase small fw-bold text-muted mb-1">Doanh thu năm</div>
-                        <h3 class="text-primary fw-bold mb-0">
-                            <?php echo number_format($total_revenue_year / 1000000, 1); ?> <span
-                                class="fs-6 text-muted">Tr</span>
-                        </h3>
-                    </div>
-                    <div class="bg-primary bg-opacity-10 text-primary rounded p-3">
-                        <i class="bi bi-currency-dollar fs-3"></i>
+<section class="section dashboard">
+    <div class="row">
+
+        <div class="col-lg-8">
+            <div class="row">
+
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card revenue-card">
+                        <div class="filter">
+                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <li class="dropdown-header text-start"><h6>Thời gian</h6></li>
+                                <li><a class="dropdown-item" href="#">Hôm nay</a></li>
+                                <li><a class="dropdown-item" href="#">Tháng này</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title">Doanh Thu <span>| Năm nay</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-currency-dollar"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6><?php echo number_format($total_revenue_year / 1000000, 1); ?> Tr</h6>
+                                    <span class="text-success small pt-1 fw-bold">8%</span> <span class="text-muted small pt-2 ps-1">tăng</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0 border-start border-4 border-success h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text-uppercase small fw-bold text-muted mb-1">Tổng Đơn Hàng</div>
-                        <h3 class="text-success fw-bold mb-0"><?php echo $total_bookings; ?></h3>
-                    </div>
-                    <div class="bg-success bg-opacity-10 text-success rounded p-3">
-                        <i class="bi bi-receipt fs-3"></i>
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card sales-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Tổng Đơn <span>| Toàn bộ</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-cart"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6><?php echo $total_bookings; ?></h6>
+                                    <span class="text-muted small pt-2 ps-1">đơn hàng</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0 border-start border-4 border-info h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text-uppercase small fw-bold text-muted mb-1">Tour Đang chạy</div>
-                        <h3 class="text-info text-dark fw-bold mb-0"><?php echo $total_tours; ?> <span
-                                class="fs-6 text-muted">đoàn</span></h3>
-                    </div>
-                    <div class="bg-info bg-opacity-10 text-info rounded p-3">
-                        <i class="bi bi-bus-front fs-3"></i>
+                <div class="col-xxl-4 col-xl-12">
+                    <div class="card info-card customers-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Tour Đang Chạy <span>| Hiện tại</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-bus-front"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6><?php echo $total_tours; ?></h6>
+                                    <span class="text-danger small pt-1 fw-bold">Active</span> 
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0 border-start border-4 border-danger h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text-uppercase small fw-bold text-muted mb-1">Cần Xử Lý</div>
-                        <h3 class="text-danger fw-bold mb-0"><?php echo $new_orders; ?> <span
-                                class="fs-6 text-muted">đơn</span></h3>
+                <div class="col-12">
+                    <div class="card">
+                        <div class="filter">
+                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <li class="dropdown-header text-start"><h6>Bộ lọc</h6></li>
+                                <li><a class="dropdown-item" href="#">Năm nay</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title">Biểu Đồ Kinh Doanh <span>/Năm nay</span></h5>
+                            <div id="reportsChart"></div>
+                        </div>
                     </div>
-                    <div class="bg-danger bg-opacity-10 text-danger rounded p-3 position-relative">
-                        <i class="bi bi-bell fs-3"></i>
-                        <?php if ($new_orders > 0): ?>
-                            <span
-                                class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle"></span>
+                </div>
+
+                <div class="col-12">
+                    <div class="card recent-sales overflow-auto">
+                        <div class="card-body">
+                            <h5 class="card-title">Đơn hàng mới nhất <span>| Hôm nay</span></h5>
+                            
+                            <table class="table table-borderless datatable">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Mã</th>
+                                        <th scope="col">Khách hàng</th>
+                                        <th scope="col">Ngày đặt</th>
+                                        <th scope="col">Giá trị</th>
+                                        <th scope="col">Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if (!empty($recent_bookings)): ?>
+                                        <?php foreach ($recent_bookings as $b): ?>
+                                            <tr>
+                                                <th scope="row"><a href="<?php echo BASE_URL; ?>/booking/detail/<?php echo $b['MaBooking']; ?>">#<?php echo $b['MaBooking']; ?></a></th>
+                                                <td><?php echo $b['TenKhach']; ?></td>
+                                                <td><a href="#" class="text-primary"><?php echo date('d/m', strtotime($b['NgayDat'])); ?></a></td>
+                                                <td><?php echo number_format($b['TongTien']); ?>đ</td>
+                                                <td>
+                                                    <?php
+                                                    $badgeClass = 'bg-secondary';
+                                                    if ($b['TrangThai'] == 'Đã xác nhận') $badgeClass = 'bg-success';
+                                                    elseif ($b['TrangThai'] == 'Chờ xác nhận') $badgeClass = 'bg-warning text-dark';
+                                                    elseif ($b['TrangThai'] == 'Đã hủy') $badgeClass = 'bg-danger';
+                                                    ?>
+                                                    <span class="badge <?php echo $badgeClass; ?>"><?php echo $b['TrangThai']; ?></span>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <tr><td colspan="5" class="text-center">Chưa có đơn hàng nào</td></tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div><div class="col-lg-4">
+
+            <div class="card info-card sales-card">
+                <div class="card-body">
+                    <h5 class="card-title">Cần Xử Lý <span>| Chờ duyệt</span></h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background: #ffe0e3; color: #dc3545;">
+                            <i class="bi bi-bell"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6><?php echo $new_orders; ?></h6>
+                            <span class="text-muted small pt-2 ps-1">đơn chờ duyệt</span>
+                        </div>
+                    </div>
+                    <a href="<?php echo BASE_URL; ?>/booking/index?status=Chờ xác nhận" class="stretched-link"></a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Hoạt Động <span>| Gần đây</span></h5>
+
+                    <div class="activity">
+                        <?php if (!empty($recent_bookings)): ?>
+                            <?php foreach (array_slice($recent_bookings, 0, 5) as $item): ?>
+                            <div class="activity-item d-flex">
+                                <div class="activity-label"><?php echo date('H:i', strtotime($item['NgayDat'])); ?></div>
+                                <i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
+                                <div class="activity-content">
+                                    Khách <strong><?php echo $item['TenKhach']; ?></strong> vừa đặt tour
+                                    <div class="text-muted small"><?php echo number_format($item['TongTien']); ?> vnđ</div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
                 </div>
-                <a href="<?php echo BASE_URL; ?>/booking/index?status=Chờ xác nhận" class="stretched-link"></a>
             </div>
-        </div>
-    </div>
-</div>
 
-<div class="row g-4">
-    <div class="col-lg-8">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 fw-bold text-dark"><i class="bi bi-graph-up-arrow text-primary"></i> Hiệu quả kinh doanh
-                </h6>
-                <select class="form-select form-select-sm w-auto border-0 bg-light fw-bold text-secondary">
-                    <option>Năm nay</option>
-                    <option>Năm ngoái</option>
-                </select>
+            <div class="d-grid gap-2 mt-3">
+                <a href="<?php echo BASE_URL; ?>/booking/create" class="btn btn-primary btn-lg shadow-sm">
+                    <i class="bi bi-plus-lg me-2"></i> Tạo Booking Mới
+                </a>
             </div>
-            <div class="card-body">
-                <canvas id="dashboardChart" style="max-height: 350px;"></canvas>
-            </div>
-        </div>
-    </div>
 
-    <div class="col-lg-4">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white py-3">
-                <h6 class="m-0 fw-bold text-dark"><i class="bi bi-clock-history text-warning"></i> Đơn hàng vừa nhận
-                </h6>
-            </div>
-            <div class="card-body p-0">
-                <div class="list-group list-group-flush">
-                    <?php if (empty($recent_bookings)): ?>
-                        <div class="text-center p-4 text-muted">Chưa có đơn hàng mới nào.</div>
-                    <?php else: ?>
-                        <?php foreach ($recent_bookings as $b): ?>
-                            <a href="<?php echo BASE_URL; ?>/booking/detail/<?php echo $b['MaBooking']; ?>"
-                                class="list-group-item list-group-item-action px-3 py-3 border-bottom-dashed">
-                                <div class="d-flex align-items-center">
-                                    <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center me-3"
-                                        style="width: 45px; height: 45px; min-width: 45px;">
-                                        <span class="fw-bold text-secondary"><?php echo substr($b['TenKhach'], 0, 1); ?></span>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="fw-bold text-dark text-truncate"
-                                                style="max-width: 140px;"><?php echo $b['TenKhach']; ?></span>
-                                            <small class="text-muted" style="font-size: 0.75rem;">
-                                                <?php echo date('d/m H:i', strtotime($b['NgayDat'])); ?>
-                                            </small>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center mt-1">
-                                            <span
-                                                class="text-primary fw-bold small"><?php echo number_format($b['TongTien']); ?>đ</span>
-                                            <?php
-                                            $bgClass = 'secondary';
-                                            if ($b['TrangThai'] == 'Chờ xác nhận')
-                                                $bgClass = 'warning text-dark';
-                                            elseif ($b['TrangThai'] == 'Đã xác nhận')
-                                                $bgClass = 'success';
-                                            elseif ($b['TrangThai'] == 'Đã hủy')
-                                                $bgClass = 'danger';
-                                            ?>
-                                            <span class="badge bg-<?php echo $bgClass; ?> bg-opacity-75 rounded-pill"
-                                                style="font-size: 0.65rem;">
-                                                <?php echo $b['TrangThai']; ?>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-            </div>
-            <div class="card-footer bg-white text-center border-0 py-3">
-                <a href="<?php echo BASE_URL; ?>/booking/index" class="text-decoration-none fw-bold small">Xem tất cả
-                    đơn hàng <i class="bi bi-arrow-right"></i></a>
-            </div>
-        </div>
-    </div>
-</div>
+        </div></div>
+</section>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('dashboardChart').getContext('2d');
+    document.addEventListener("DOMContentLoaded", () => {
+        // Dữ liệu từ PHP
+        const labels = <?php echo $chart_labels; ?>; 
+        const revenueData = <?php echo $chart_revenue; ?>; 
+        const profitData = <?php echo $chart_profit; ?>;
 
-    // Gradient màu cho đẹp hơn
-    let gradientRev = ctx.createLinearGradient(0, 0, 0, 400);
-    gradientRev.addColorStop(0, 'rgba(13, 110, 253, 0.5)'); // Blue
-    gradientRev.addColorStop(1, 'rgba(13, 110, 253, 0.0)');
-
-    let gradientProfit = ctx.createLinearGradient(0, 0, 0, 400);
-    gradientProfit.addColorStop(0, 'rgba(25, 135, 84, 0.5)'); // Green
-    gradientProfit.addColorStop(1, 'rgba(25, 135, 84, 0.0)');
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: <?php echo $chart_labels; ?>, // Đảm bảo controller trả về JSON String
-            datasets: [
-                {
-                    label: 'Doanh thu',
-                    data: <?php echo $chart_revenue; ?>,
-                    borderColor: '#0d6efd', // Bootstrap Primary
-                    backgroundColor: gradientRev,
-                    borderWidth: 2,
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#0d6efd',
-                    pointRadius: 4,
-                    fill: true,
-                    tension: 0.4 // Đường cong mềm mại
-                },
-                {
-                    label: 'Lợi nhuận',
-                    data: <?php echo $chart_profit; ?>,
-                    borderColor: '#198754', // Bootstrap Success
-                    backgroundColor: gradientProfit,
-                    borderWidth: 2,
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#198754',
-                    pointRadius: 4,
-                    fill: true,
-                    tension: 0.4
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'top', align: 'end' },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(0,0,0,0.8)',
-                    padding: 10,
-                    cornerRadius: 8
+        new ApexCharts(document.querySelector("#reportsChart"), {
+            series: [{
+                name: 'Doanh thu',
+                data: revenueData,
+            }, {
+                name: 'Lợi nhuận',
+                data: profitData
+            }],
+            chart: {
+                height: 350,
+                type: 'area',
+                toolbar: { show: false },
+            },
+            markers: { size: 4 },
+            colors: ['#4154f1', '#2eca6a'],
+            fill: {
+                type: "gradient",
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.3,
+                    opacityTo: 0.4,
+                    stops: [0, 90, 100]
                 }
             },
-            scales: {
+            dataLabels: { enabled: false },
+            stroke: { curve: 'smooth', width: 2 },
+            xaxis: {
+                type: 'category', 
+                categories: labels,
+                tooltip: { enabled: false }
+            },
+            tooltip: {
                 y: {
-                    beginAtZero: true,
-                    grid: { borderDash: [2, 4], color: '#f0f0f0' },
-                    ticks: {
-                        callback: function (value) {
-                            if (value >= 1000000) return (value / 1000000).toLocaleString() + ' Tr';
-                            return value.toLocaleString() + ' đ';
-                        }
+                    formatter: function(val) {
+                        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
                     }
-                },
-                x: {
-                    grid: { display: false }
                 }
             }
-        }
+        }).render();
     });
 </script>

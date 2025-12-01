@@ -1,159 +1,263 @@
 :root {
-    /* MÀU SẮC CHỦ ĐẠO */
-    --primary-color: #2563eb;       
-    --primary-light: #eff6ff;       
-    --secondary-color: #64748b;     
-    --success-color: #10b981;       
-    --warning-color: #f59e0b;       
-    --danger-color: #ef4444;        
+    /* --- 1. BẢNG MÀU NICEADMIN --- */
+    --primary-color: #4154f1;       /* Xanh dương tươi (Active, Icon chính) */
+    --secondary-color: #012970;     /* Xanh đậm (Text chính, Heading, Sidebar Text) */
+    --text-muted: #899bbd;          /* Màu chữ mờ (Text phụ) */
     
-    /* SIDEBAR */
-    --sidebar-bg: #0f172a;          
-    --sidebar-text: #e2e8f0;        /* [SỬA] Màu chữ sáng hơn (trắng ngà) */
-    --sidebar-hover: rgba(255, 255, 255, 0.1); 
+    --success-color: #2eca6a;       /* Xanh lá (Doanh thu) */
+    --warning-color: #ff771d;       /* Cam (Khách hàng) */
+    --danger-color: #dc3545;        /* Đỏ (Báo lỗi) */
+    
+    /* BACKGROUND */
+    --bg-body: #f6f9ff;             /* Nền body xám xanh nhạt đặc trưng */
+    --sidebar-bg: #ffffff;          /* Sidebar trắng */
+    --sidebar-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
     
     /* BỐ CỤC */
-    --card-radius: 12px;            
-    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    --transition-speed: 0.2s;
+    --card-radius: 5px;            
+    --card-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
+    --transition-speed: 0.3s;
+    --font-heading: "Nunito", sans-serif;
+    --font-body: "Open Sans", sans-serif;
 }
 
 body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background-color: #f8fafc; 
-    color: #334155;
-    font-size: 0.9rem; /* Giảm size chữ body xuống xíu cho gọn */
+    font-family: var(--font-body);
+    background-color: var(--bg-body);
+    color: #444444;
+    font-size: 0.95rem;
 }
 
-/* --- 1. SIDEBAR FIXED (SỬA LỖI KHOẢNG TRỐNG) --- */
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: 0.3s;
+}
+
+a:hover { color: #717ff5; }
+
+/* --- 2. SIDEBAR STYLE (NỀN TRẮNG) --- */
+#wrapper {
+    overflow-x: hidden;
+}
+
 #sidebar-wrapper {
     background: var(--sidebar-bg) !important;
-    box-shadow: 4px 0 24px rgba(0,0,0,0.05);
+    box-shadow: var(--sidebar-shadow);
     z-index: 1000;
+    width: 300px;
+    transition: all 0.3s;
 }
 
 .sidebar-heading {
-    background: rgba(0,0,0,0.2); 
-    font-size: 1.2rem;
-    letter-spacing: 0.5px;
+    background: #fff; 
+    font-size: 1.5rem;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--secondary-color) !important;
     padding: 1.25rem 1.5rem !important;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-/* List Group Item (Menu) */
-.list-group-item {
-    color: var(--sidebar-text) !important; /* [SỬA] Màu chữ sáng rõ */
-    background-color: transparent !important;
-    border: none !important;
-    border-radius: 6px; /* Bo góc nhẹ */
-    margin: 4px 10px;   /* Khoảng cách giữa các nút */
-    padding: 10px 16px !important;
-    font-weight: 500;
-    transition: all var(--transition-speed);
-    display: flex;      /* Canh chỉnh icon và text thẳng hàng */
+    display: flex;
     align-items: center;
     gap: 10px;
-    opacity: 0.85;      /* Hơi mờ nhẹ để tạo chiều sâu */
+}
+
+.sidebar-heading {
+    width: 300px; /* [QUAN TRỌNG] Đặt chiều rộng bằng đúng Sidebar để thẳng hàng */
+    background-color: #fff; /* Đảm bảo nền trắng */
+    font-size: 1.5rem;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--secondary-color) !important;
+    padding: 0 20px; /* Canh lề chữ bên trong */
+    height: 60px; /* Chiều cao bằng Header */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    
+    /* Thêm viền phải mờ để khớp với sidebar bên dưới (tạo cảm giác liền mạch) */
+    border-right: 1px solid rgba(0,0,0,0.05); 
+}
+
+/* List Group Item (Menu Link) */
+.list-group-item {
+    color: var(--secondary-color) !important; /* Màu chữ xanh đậm */
+    background-color: transparent !important;
+    border: none !important;
+    border-radius: 4px; 
+    margin: 4px 15px;   
+    padding: 12px 15px !important;
+    font-weight: 600;
+    transition: all var(--transition-speed);
+    display: flex;      
+    align-items: center;
+    gap: 12px;
+}
+
+.list-group-item i {
+    font-size: 16px;
+    color: #899bbd; /* Icon mặc định màu xám */
 }
 
 /* Hover Effect */
 .list-group-item:hover {
-    background-color: var(--sidebar-hover) !important;
-    color: #fff !important;
-    opacity: 1;
-    transform: translateX(4px); /* Trượt nhẹ sang phải */
+    background-color: #f6f9ff !important; /* Hover nền xanh rất nhạt */
+    color: var(--primary-color) !important;
 }
+.list-group-item:hover i { color: var(--primary-color); }
 
 /* Active State */
 .list-group-item.active {
-    background-color: var(--primary-color) !important;
-    color: #fff !important;
-    opacity: 1;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4); 
-    font-weight: 600;
-}
-
-/* Sidebar Divider (Tiêu đề nhóm) */
-.sidebar-divider {
-    color: #94a3b8; /* Màu xám xanh sáng hơn */
-    font-size: 0.7rem;
+    background-color: #f6f9ff !important;
+    color: var(--primary-color) !important;
     font-weight: 700;
-    margin-top: 20px;
-    margin-bottom: 8px;
-    padding-left: 24px;
+    box-shadow: none; /* Bỏ bóng của code cũ */
+}
+.list-group-item.active i { color: var(--primary-color); }
+
+/* Tiêu đề nhóm (Section Divider) */
+.sidebar-divider {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1.2px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    padding-left: 30px;
+    font-family: var(--font-heading);
 }
 
-/* --- 2. MAIN CONTENT & NAVBAR --- */
+/* --- 3. MAIN CONTENT & NAVBAR --- */
 #page-content-wrapper {
     width: 100%;
-    overflow-x: hidden; /* Tránh thanh cuộn ngang */
 }
 
 .navbar-custom {
     background: #fff;
-    padding: 12px 30px;
-    border-bottom: 1px solid #e2e8f0;
+    padding: 10px 20px;
+    box-shadow: 0px 2px 20px rgba(1, 41, 112, 0.1);
+    border-bottom: none;
+    height: 60px;
 }
 
-/* --- 3. CARDS & TABLES --- */
+/* --- 4. CARDS & GENERAL UI (Fix lỗi dính thẻ) --- */
+.pagetitle h1 {
+    font-size: 24px; margin-bottom: 0;
+    font-weight: 600; color: var(--secondary-color);
+    font-family: var(--font-heading);
+}
+
 .card {
     border: none;
     border-radius: var(--card-radius);
     box-shadow: var(--card-shadow);
     background: #fff;
-    margin-bottom: 24px;
+    margin-bottom: 30px; /* QUAN TRỌNG: Tạo khoảng cách dưới đáy mỗi card */
+    overflow: visible; /* Để menu dropdown không bị che */
 }
 
-.card-header {
-    background: #fff;
-    border-bottom: 1px solid #f1f5f9;
-    padding: 1.25rem 1.5rem;
-    font-weight: 700;
-    color: #1e293b;
-    border-radius: var(--card-radius) var(--card-radius) 0 0 !important;
+.card-body {
+    padding: 0 20px 20px 20px;
 }
 
-.table thead th {
-    background-color: #f8fafc;
-    color: #64748b;
-    font-weight: 600;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    padding: 12px 16px;
-    border-bottom: 2px solid #e2e8f0;
-}
-
-.table tbody td {
-    padding: 14px 16px;
-    vertical-align: middle;
-    color: #334155;
-    border-bottom: 1px solid #f1f5f9;
-    font-size: 0.9rem;
-}
-
-/* --- 4. BUTTONS & INPUTS --- */
-.btn {
-    border-radius: 6px;
-    padding: 8px 16px;
+.card-title {
+    padding: 20px 0 15px 0;
+    font-size: 18px;
     font-weight: 500;
-    font-size: 0.9rem;
+    color: var(--secondary-color);
+    font-family: var(--font-heading);
 }
 
+.card-title span {
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 400;
+}
+
+/* --- 5. DASHBOARD SPECIFIC (STYLE RIÊNG CHO CÁC THẺ THỐNG KÊ) --- */
+
+/* Nút Filter (...) */
+.filter {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+.filter .icon {
+    color: var(--text-muted);
+    font-size: 16px;
+    cursor: pointer;
+}
+.filter .icon:hover { color: var(--primary-color); }
+
+/* Info Card Icons (Icon tròn to) */
+.info-card h6 {
+    font-size: 28px;
+    color: var(--secondary-color);
+    font-weight: 700;
+    margin: 0;
+}
+
+.card-icon {
+    font-size: 32px;
+    line-height: 0;
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Màu sắc riêng cho từng loại thẻ */
+.sales-card .card-icon {
+    color: var(--primary-color);
+    background: #f6f6fe;
+}
+.revenue-card .card-icon {
+    color: var(--success-color);
+    background: #e0f8e9;
+}
+.customers-card .card-icon {
+    color: var(--warning-color);
+    background: #ffecdf;
+}
+
+/* Activity Timeline (Dòng thời gian bên phải) */
+.activity-item {
+    font-size: 14px;
+    padding-bottom: 20px;
+}
+.activity-label {
+    color: #888;
+    font-weight: 600;
+    min-width: 64px;
+}
+.activity-badge {
+    z-index: 1;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    margin: 0 10px;
+    flex-shrink: 0;
+}
+.activity-content { padding-left: 10px; }
+
+/* Table Style */
+.table thead { background: #f6f6fe; }
+.table thead th {
+    border-bottom: none;
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+.table td { vertical-align: middle; }
+
+/* Nút bấm & Form */
 .btn-primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
+    box-shadow: 0 2px 15px rgba(65, 84, 241, 0.4); /* Bóng xanh đẹp */
 }
-
-.form-control, .form-select {
-    border-radius: 6px;
-    border: 1px solid #cbd5e1;
-    padding: 8px 12px;
-    font-size: 0.9rem;
-}
-
-.form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+.btn-primary:hover {
+    background-color: #3041d6;
+    border-color: #3041d6;
 }

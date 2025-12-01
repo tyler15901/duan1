@@ -1,141 +1,153 @@
-<div class="mb-4">
-    <a href="<?php echo BASE_URL; ?>/schedule/index" class="text-decoration-none text-muted">
-        <i class="bi bi-arrow-left"></i> Quay lại danh sách
-    </a>
+<div class="pagetitle">
+    <h1>Chi tiết Vận hành</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>">Home</a></li>
+            <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>/schedule/index">Lịch trình</a></li>
+            <li class="breadcrumb-item active"><?php echo $schedule['LichCode']; ?></li>
+        </ol>
+    </nav>
 </div>
 
-<div class="card border-0 shadow-sm bg-primary text-white mb-4 position-relative overflow-hidden">
-    <div class="card-body p-4">
-        <div class="row align-items-center position-relative" style="z-index: 2;">
-            <div class="col-md-8">
-                <h5 class="text-white-50 text-uppercase ls-1">Chi tiết Lịch khởi hành</h5>
-                <h1 class="fw-bold mb-0"><?php echo $schedule['LichCode']; ?></h1>
-                <p class="fs-5 mb-0 opacity-75"><?php echo $schedule['TenTour']; ?></p>
-            </div>
-            <div class="col-md-4 text-end">
-                <a href="<?php echo BASE_URL; ?>/schedule/edit/<?php echo $schedule['MaLichKhoiHanh']; ?>" class="btn btn-light text-primary fw-bold shadow-sm">
-                    <i class="bi bi-pencil-fill"></i> Sửa lịch
-                </a>
-            </div>
-        </div>
-    </div>
-    <i class="bi bi-airplane-engines position-absolute" style="font-size: 10rem; opacity: 0.1; right: -20px; bottom: -40px;"></i>
-</div>
-
-<div class="row g-4">
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 mb-4 h-100">
-            <div class="card-body">
-                <h6 class="fw-bold text-muted text-uppercase mb-3">Thông tin vận hành</h6>
-                
-                <ul class="list-unstyled">
-                    <li class="mb-3">
-                        <small class="text-muted d-block">Thời gian:</small>
-                        <span class="fw-bold fs-5 text-dark">
-                            <?php echo date('d/m/Y', strtotime($schedule['NgayKhoiHanh'])); ?>
-                        </span>
-                        <i class="bi bi-arrow-right mx-2 text-muted"></i>
-                        <span class="fw-bold fs-5 text-dark">
-                            <?php echo date('d/m/Y', strtotime($schedule['NgayKetThuc'])); ?>
-                        </span>
-                    </li>
-                    <li class="mb-3">
-                        <small class="text-muted d-block">Tập trung:</small>
-                        <strong><?php echo $schedule['GioTapTrung']; ?></strong> <br>
-                        <?php echo $schedule['DiaDiemTapTrung']; ?>
-                    </li>
-                    <li class="mb-3">
-                        <small class="text-muted d-block">Tình trạng chỗ:</small>
-                        <div class="d-flex align-items-center mt-1">
-                            <div class="progress flex-grow-1 me-2" style="height: 10px;">
-                                <?php 
-                                    $percent = ($schedule['SoKhachHienTai'] / $schedule['SoChoToiDa']) * 100;
-                                    $color = ($percent > 90) ? 'danger' : 'success';
-                                ?>
-                                <div class="progress-bar bg-<?php echo $color; ?>" role="progressbar" style="width: <?php echo $percent; ?>%"></div>
-                            </div>
-                            <span class="fw-bold"><?php echo $schedule['SoKhachHienTai']; ?>/<?php echo $schedule['SoChoToiDa']; ?></span>
+<section class="section profile">
+    <div class="row">
+        <div class="col-xl-4">
+            <div class="card">
+                <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
+                        <i class="bi bi-bus-front"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1"><?php echo $schedule['LichCode']; ?></h5>
+                    <span class="text-muted text-center small"><?php echo $schedule['TenTour']; ?></span>
+                    
+                    <div class="w-100 mt-4">
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">Khởi hành:</span>
+                            <span class="fw-bold text-dark"><?php echo date('d/m/Y', strtotime($schedule['NgayKhoiHanh'])); ?></span>
                         </div>
-                    </li>
-                    <li>
-                        <small class="text-muted d-block">Trạng thái:</small>
-                        <span class="badge bg-success mt-1"><?php echo $schedule['TrangThai']; ?></span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">Kết thúc:</span>
+                            <span class="fw-bold text-dark"><?php echo date('d/m/Y', strtotime($schedule['NgayKetThuc'])); ?></span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">Tập trung:</span>
+                            <span class="fw-bold text-primary"><?php echo $schedule['GioTapTrung']; ?></span>
+                        </div>
+                        <div class="py-2 border-bottom">
+                            <span class="text-muted d-block mb-1">Điểm đón:</span>
+                            <span class="fw-bold small"><?php echo $schedule['DiaDiemTapTrung']; ?></span>
+                        </div>
 
-    <div class="col-md-8">
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header bg-white fw-bold py-3 border-bottom-0">
-                        <i class="bi bi-person-badge text-warning me-2"></i> Hướng dẫn viên
-                    </div>
-                    <div class="list-group list-group-flush">
-                        <?php if(empty($staffs)): ?>
-                            <div class="p-4 text-center text-muted bg-light m-3 rounded border border-dashed">
-                                Chưa có HDV nào.
+                        <div class="py-2 border-bottom bg-light px-3 rounded my-2">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted small">Người lớn:</span>
+                                <strong class="text-success"><?php echo number_format($schedule['GiaNguoiLon']); ?> đ</strong>
                             </div>
-                        <?php else: ?>
-                            <?php foreach($staffs as $s): ?>
-                                <div class="list-group-item border-0 d-flex align-items-center px-4 py-3">
-                                    <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-2 me-3">
-                                        <i class="bi bi-person-fill fs-5"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0 fw-bold"><?php echo $s['HoTen']; ?></h6>
-                                        <small class="text-muted"><?php echo $s['SoDienThoai']; ?></small>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted small">Trẻ em:</span>
+                                <strong class="text-info"><?php echo number_format($schedule['GiaTreEm']); ?> đ</strong>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between py-2 align-items-center">
+                            <span class="text-muted">Trạng thái:</span>
+                            <span class="badge bg-success"><?php echo $schedule['TrangThai']; ?></span>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-6">
-                <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header bg-white fw-bold py-3 border-bottom-0">
-                        <i class="bi bi-truck text-info me-2"></i> Xe & Khách sạn
-                    </div>
-                    <div class="list-group list-group-flush">
-                        <?php if(empty($resources)): ?>
-                            <div class="p-4 text-center text-muted bg-light m-3 rounded border border-dashed">
-                                Chưa phân bổ tài nguyên.
-                            </div>
-                        <?php else: ?>
-                            <?php foreach($resources as $r): ?>
-                                <div class="list-group-item border-0 d-flex align-items-start px-4 py-3">
-                                    <div class="bg-info bg-opacity-10 text-info rounded p-2 me-3">
-                                        <i class="bi bi-box-seam"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0 fw-bold"><?php echo $r['TenTaiNguyen']; ?></h6>
-                                        <small class="text-muted d-block">NCC: <?php echo $r['TenNhaCungCap']; ?></small>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="card shadow-sm border-0 bg-light">
-                    <div class="card-body d-flex justify-content-center gap-3">
-                        <a href="<?php echo BASE_URL; ?>/schedule/guests/<?php echo $schedule['MaLichKhoiHanh']; ?>" class="btn btn-outline-primary bg-white px-4">
-                            <i class="bi bi-people"></i> Quản lý Danh sách khách
+            
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Quản lý nhanh</h5>
+                    <div class="d-grid gap-2">
+                         <a href="<?php echo BASE_URL; ?>/schedule/guests/<?php echo $schedule['MaLichKhoiHanh']; ?>" class="btn btn-outline-primary">
+                            <i class="bi bi-people me-2"></i> Danh sách khách
                         </a>
-                        <a href="<?php echo BASE_URL; ?>/schedule/expenses/<?php echo $schedule['MaLichKhoiHanh']; ?>" class="btn btn-outline-success bg-white px-4">
-                            <i class="bi bi-currency-dollar"></i> Quản lý Chi phí
+                        <a href="<?php echo BASE_URL; ?>/schedule/expenses/<?php echo $schedule['MaLichKhoiHanh']; ?>" class="btn btn-outline-success">
+                            <i class="bi bi-currency-dollar me-2"></i> Chi phí & Lãi
+                        </a>
+                        <a href="<?php echo BASE_URL; ?>/schedule/edit/<?php echo $schedule['MaLichKhoiHanh']; ?>" class="btn btn-outline-warning text-dark">
+                            <i class="bi bi-pencil me-2"></i> Sửa thông tin
                         </a>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="col-xl-8">
+            <div class="card">
+                <div class="card-body pt-3">
+                    <ul class="nav nav-tabs nav-tabs-bordered">
+                        <li class="nav-item">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#staffs">Hướng dẫn viên</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#resources">Xe & Dịch vụ</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content pt-4">
+                        <div class="tab-pane fade show active" id="staffs">
+                            <?php if(empty($staffs)): ?>
+                                <div class="alert alert-warning">Chưa phân công HDV.</div>
+                            <?php else: ?>
+                                <div class="list-group">
+                                <?php foreach($staffs as $s): ?>
+                                    <div class="list-group-item border-0 d-flex align-items-center px-0">
+                                        <div class="bg-light rounded-circle p-2 me-3 text-primary">
+                                            <i class="bi bi-person-badge fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold"><?php echo $s['HoTen']; ?></h6>
+                                            <small class="text-muted"><i class="bi bi-telephone"></i> <?php echo $s['SoDienThoai']; ?></small>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="tab-pane fade" id="resources">
+                            <?php if(empty($resources)): ?>
+                                <div class="alert alert-light border">Chưa có dịch vụ đi kèm.</div>
+                            <?php else: ?>
+                                <div class="list-group">
+                                <?php foreach($resources as $r): ?>
+                                    <div class="list-group-item border-0 d-flex align-items-start px-0 mb-2">
+                                        <div class="bg-light rounded p-2 me-3 text-info">
+                                            <i class="bi bi-box-seam fs-5"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold"><?php echo $r['TenTaiNguyen']; ?></h6>
+                                            <span class="badge bg-light text-dark border me-2"><?php echo $r['LoaiCungCap']; ?></span>
+                                            <small class="text-muted">NCC: <?php echo $r['TenNhaCungCap']; ?></small>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tình trạng chỗ</h5>
+                    <?php 
+                        $percent = ($schedule['SoKhachHienTai'] / $schedule['SoChoToiDa']) * 100;
+                    ?>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="fw-bold">Đã đặt: <?php echo $schedule['SoKhachHienTai']; ?> khách</span>
+                        <span class="text-muted">Tổng: <?php echo $schedule['SoChoToiDa']; ?> chỗ</span>
+                    </div>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: <?php echo $percent; ?>%"><?php echo round($percent); ?>%</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
-</div>
+</section>

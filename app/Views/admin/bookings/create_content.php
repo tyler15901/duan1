@@ -1,193 +1,214 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="text-primary fw-bold">Tạo Đơn Hàng Mới</h2>
-    <a href="<?php echo BASE_URL; ?>/booking/index" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left"></i> Quay lại
-    </a>
+<div class="pagetitle">
+    <h1>Tạo Đơn Hàng Mới</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>">Home</a></li>
+            <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>/booking/index">Đơn hàng</a></li>
+            <li class="breadcrumb-item active">Tạo mới</li>
+        </ol>
+    </nav>
 </div>
 
-<form action="<?php echo BASE_URL; ?>/booking/store" method="POST" id="bookingForm" class="needs-validation" novalidate>
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-white py-3 border-bottom-0">
-                    <h5 class="mb-0 text-primary fw-bold"><i class="bi bi-info-circle"></i> 1. Thông tin Tour & Lịch
-                        trình</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">Chọn Tour <span class="text-danger">*</span></label>
-                            <select name="tour_id" id="tour_select" class="form-select form-select-lg" required
-                                onchange="loadSchedules()">
-                                <option value="">-- Tìm kiếm và chọn Tour --</option>
-                                <?php foreach ($tours as $t): ?>
-                                    <option value="<?php echo $t['MaTour']; ?>"><?php echo $t['TenTour']; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <div class="form-text">
-                                Không thấy tour? <a href="<?php echo BASE_URL; ?>/tour/create" target="_blank">Tạo Tour
-                                    mới</a> rồi tải lại trang.
+<section class="section">
+    <form action="<?php echo BASE_URL; ?>/booking/store" method="POST" id="bookingForm">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary"><i class="bi bi-geo-alt-fill me-2"></i> Thông tin Tour & Lịch trình</h5>
+                        
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Chọn Tour <span class="text-danger">*</span></label>
+                                <select name="tour_id" id="tour_select" class="form-select" required onchange="loadSchedules()">
+                                    <option value="">-- Chọn Tour --</option>
+                                    <?php foreach ($tours as $t): ?>
+                                        <option value="<?php echo $t['MaTour']; ?>"><?php echo $t['TenTour']; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
-                        </div>
 
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">Chọn Ngày Khởi Hành <span
-                                    class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <select name="lich_id" id="schedule_select" class="form-select" required disabled>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Chọn Lịch Khởi Hành <span class="text-danger">*</span></label>
+                                <select name="lich_id" id="schedule_select" class="form-select" required disabled onchange="updatePriceInfo()">
                                     <option value="">-- Vui lòng chọn Tour trước --</option>
                                 </select>
-                                <button class="btn btn-light border" type="button" onclick="loadSchedules()"
-                                    title="Tải lại">
-                                    <i class="bi bi-arrow-clockwise"></i>
-                                </button>
+                                <div id="price_info" class="alert alert-light border mt-2 d-none">
+                                    <div class="d-flex justify-content-between small">
+                                        <span><i class="bi bi-person-fill"></i> Giá người lớn: <strong class="text-success" id="lbl_price_adult">0</strong> đ</span>
+                                        <span><i class="bi bi-emoji-smile-fill"></i> Giá trẻ em: <strong class="text-info" id="lbl_price_child">0</strong> đ</span>
+                                    </div>
+                                    <input type="hidden" id="raw_price_adult" value="0">
+                                    <input type="hidden" id="raw_price_child" value="0">
+                                </div>
                             </div>
-                            <div id="schedule_message" class="mt-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-success"><i class="bi bi-person-lines-fill me-2"></i> Khách hàng & Số lượng</h5>
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Họ và tên <span class="text-danger">*</span></label>
+                                <input type="text" name="ho_ten" class="form-control" required placeholder="Nguyễn Văn A">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Số điện thoại <span class="text-danger">*</span></label>
+                                <input type="text" name="so_dien_thoai" class="form-control" required placeholder="09xxxx">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 bg-light p-3 rounded border mx-1">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-success">Người lớn (>11t)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="bi bi-person-standing"></i></span>
+                                    <input type="number" name="sl_nguoi_lon" id="qty_adult" class="form-control fw-bold" value="1" min="1" required oninput="calculateTotal()">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-info">Trẻ em (5-11t)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="bi bi-emoji-smile"></i></span>
+                                    <input type="number" name="sl_tre_em" id="qty_child" class="form-control fw-bold" value="0" min="0" oninput="calculateTotal()">
+                                </div>
+                            </div>
+                            <div class="col-12 text-end">
+                                <small class="text-muted" id="total_pax_lbl">Tổng: 1 khách</small>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-white py-3 border-bottom-0">
-                    <h5 class="mb-0 text-success fw-bold"><i class="bi bi-people"></i> 2. Thông tin Khách hàng</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Số điện thoại <span class="text-danger">*</span></label>
-                            <input type="text" name="so_dien_thoai" class="form-control" required
-                                placeholder="09xxx...">
+            <div class="col-lg-4">
+                <div class="card bg-white border shadow-sm position-sticky" style="top: 20px;">
+                    <div class="card-header bg-warning text-dark fw-bold">
+                        <i class="bi bi-calculator me-2"></i> Tạm tính
+                    </div>
+                    <div class="card-body pt-3">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Tổng tiền đơn hàng</label>
+                            <div class="input-group input-group-lg">
+                                <input type="text" id="display_money" class="form-control fw-bold text-primary bg-white" value="0" readonly>
+                                <span class="input-group-text bg-white">đ</span>
+                            </div>
+                            <input type="hidden" name="tong_tien" id="real_money" value="0">
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Họ và tên <span class="text-danger">*</span></label>
-                            <input type="text" name="ho_ten" class="form-control" required placeholder="Nguyễn Văn A">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Trạng thái thanh toán</label>
+                            <select name="trang_thai_tt" class="form-select">
+                                <option value="Chưa thanh toán">⚪ Chưa thanh toán</option>
+                                <option value="Đã cọc">🟡 Đã đặt cọc</option>
+                                <option value="Đã thanh toán">🟢 Đã thanh toán (Full)</option>
+                            </select>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Số lượng khách <span class="text-danger">*</span></label>
-                            <input type="number" name="so_luong" id="pax_count" class="form-control" value="1" min="1"
-                                required
-                                oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1">
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                <i class="bi bi-check-circle-fill me-2"></i> Tạo Booking
+                            </button>
+                            <a href="<?php echo BASE_URL; ?>/booking/index" class="btn btn-outline-secondary">Hủy bỏ</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-lg-4">
-            <div class="card shadow-sm border-0 mb-4 bg-light">
-                <div class="card-header bg-warning bg-opacity-10 py-3 border-bottom-0">
-                    <h5 class="mb-0 text-warning text-dark fw-bold"><i class="bi bi-wallet2"></i> 3. Thanh toán</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Tổng tiền (VNĐ)</label>
-                        <input type="text" id="display_money" class="form-control form-control-lg fw-bold text-primary"
-                            placeholder="0" onkeyup="formatCurrency(this)">
-                        <input type="hidden" name="tong_tien" id="real_money">
-                        <div class="form-text small">Nhập số tiền, hệ thống tự thêm dấu phẩy.</div>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">Trạng thái TT</label>
-                        <select name="trang_thai_tt" class="form-select">
-                            <option value="Chưa thanh toán">Chưa thanh toán</option>
-                            <option value="Đã cọc">Đã đặt cọc</option>
-                            <option value="Đã thanh toán">Đã thanh toán hết</option>
-                        </select>
-                    </div>
-
-                    <hr>
-                    <button type="submit" class="btn btn-primary btn-lg w-100 shadow">
-                        <i class="bi bi-check-lg"></i> Xác nhận Đặt Tour
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</form>
+    </form>
+</section>
 
 <script>
-    // Hàm format tiền tệ (Hiển thị 1,000,000)
-    function formatCurrency(input) {
-        // Xóa mọi ký tự không phải số
-        let value = input.value.replace(/\D/g, '');
-        // Cập nhật giá trị thực vào input hidden
-        document.getElementById('real_money').value = value;
-        // Format lại hiển thị
-        input.value = new Intl.NumberFormat('vi-VN').format(value);
-    }
-
+    // 1. Load Lịch trình (AJAX)
     function loadSchedules() {
         const tourId = document.getElementById('tour_select').value;
         const scheduleSelect = document.getElementById('schedule_select');
-        const messageDiv = document.getElementById('schedule_message');
+        const priceInfo = document.getElementById('price_info');
 
-        // Reset UI Loading
-        scheduleSelect.innerHTML = '<option value="">Đang tải dữ liệu...</option>';
+        scheduleSelect.innerHTML = '<option value="">Đang tải...</option>';
         scheduleSelect.disabled = true;
-        messageDiv.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Đang tìm lịch...';
+        priceInfo.classList.add('d-none'); // Ẩn bảng giá tạm thời
 
         if (!tourId) {
             scheduleSelect.innerHTML = '<option value="">-- Vui lòng chọn Tour trước --</option>';
-            messageDiv.innerHTML = '';
             return;
         }
 
-        // Fetch Data
         fetch('<?php echo BASE_URL; ?>/booking/get_schedules?tour_id=' + tourId)
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
                 scheduleSelect.innerHTML = '<option value="">-- Chọn ngày khởi hành --</option>';
-
+                
                 if (data.length > 0) {
-                    messageDiv.innerHTML = ''; // Clear loading
                     data.forEach(item => {
-                        const slotsLeft = item.SoChoToiDa - item.SoKhachHienTai;
                         const dateStr = new Date(item.NgayKhoiHanh).toLocaleDateString('vi-VN');
                         const option = document.createElement('option');
-
                         option.value = item.MaLichKhoiHanh;
-                        option.text = `[${dateStr}] - ${item.LichCode} (Còn ${slotsLeft} chỗ)`;
-                        option.setAttribute('data-slots', slotsLeft);
-
-                        if (slotsLeft <= 0) {
-                            option.disabled = true;
-                            option.text += ' - HẾT CHỖ';
-                        }
-
+                        option.text = `[${dateStr}] - ${item.LichCode} (Còn ${item.SoChoToiDa - item.SoKhachHienTai} chỗ)`;
+                        
+                        // [QUAN TRỌNG] Gắn giá tiền vào data attribute để JS đọc
+                        option.setAttribute('data-price-adult', item.GiaNguoiLon || 0);
+                        option.setAttribute('data-price-child', item.GiaTreEm || 0);
+                        
                         scheduleSelect.add(option);
                     });
                     scheduleSelect.disabled = false;
                 } else {
-                    scheduleSelect.innerHTML = '<option value="">Không có lịch phù hợp</option>';
-                    // Hiển thị nút tạo lịch nhanh
-                    messageDiv.innerHTML = `
-                        <div class="alert alert-warning d-flex align-items-center mt-2 p-2">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            <div>
-                                Tour này chưa có lịch khởi hành. 
-                                <a href="<?php echo BASE_URL; ?>/schedule/create?tour_id=${tourId}" target="_blank" class="fw-bold text-dark text-decoration-underline">Tạo lịch ngay</a>
-                            </div>
-                        </div>`;
+                    scheduleSelect.innerHTML = '<option value="">Không có lịch chạy</option>';
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                messageDiv.innerHTML = '<span class="text-danger">Lỗi kết nối server!</span>';
             });
     }
 
-    // Logic cập nhật max slot
-    document.getElementById('schedule_select').addEventListener('change', function () {
-        const messageDiv = document.getElementById('schedule_message');
-        const selectedOption = this.options[this.selectedIndex];
+    // 2. Cập nhật thông tin giá khi chọn Lịch
+    function updatePriceInfo() {
+        const select = document.getElementById('schedule_select');
+        const priceInfo = document.getElementById('price_info');
+        
+        if (select.value) {
+            const option = select.options[select.selectedIndex];
+            const pAdult = parseFloat(option.getAttribute('data-price-adult'));
+            const pChild = parseFloat(option.getAttribute('data-price-child'));
 
-        if (this.value) {
-            const slots = selectedOption.getAttribute('data-slots');
-            messageDiv.innerHTML = `<span class="badge bg-info text-dark">Lịch trình OK</span> <span class="text-success fw-bold">Còn ${slots} chỗ trống</span>`;
-            document.getElementById('pax_count').max = slots;
+            // Hiển thị ra UI
+            document.getElementById('lbl_price_adult').innerText = new Intl.NumberFormat('vi-VN').format(pAdult);
+            document.getElementById('lbl_price_child').innerText = new Intl.NumberFormat('vi-VN').format(pChild);
+            
+            // Lưu vào input ẩn
+            document.getElementById('raw_price_adult').value = pAdult;
+            document.getElementById('raw_price_child').value = pChild;
+
+            priceInfo.classList.remove('d-none');
+            
+            // Tính lại tổng tiền ngay
+            calculateTotal();
         } else {
-            messageDiv.innerHTML = '';
+            priceInfo.classList.add('d-none');
+            document.getElementById('raw_price_adult').value = 0;
+            document.getElementById('raw_price_child').value = 0;
+            calculateTotal();
         }
-    });
+    }
+
+    // 3. Tính toán tổng tiền (Logic chính)
+    function calculateTotal() {
+        // Lấy số lượng
+        const qtyAdult = parseInt(document.getElementById('qty_adult').value) || 0;
+        const qtyChild = parseInt(document.getElementById('qty_child').value) || 0;
+
+        // Lấy giá vé
+        const priceAdult = parseFloat(document.getElementById('raw_price_adult').value) || 0;
+        const priceChild = parseFloat(document.getElementById('raw_price_child').value) || 0;
+
+        // Tính toán
+        const totalMoney = (qtyAdult * priceAdult) + (qtyChild * priceChild);
+        const totalPax = qtyAdult + qtyChild;
+
+        // Hiển thị
+        document.getElementById('real_money').value = totalMoney;
+        document.getElementById('display_money').value = new Intl.NumberFormat('vi-VN').format(totalMoney);
+        document.getElementById('total_pax_lbl').innerText = `Tổng: ${totalPax} khách`;
+    }
 </script>

@@ -75,25 +75,24 @@ class ScheduleController extends Controller
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $model = $this->model('ScheduleModel');
 
-            // Gom dữ liệu từ Form
             $mainData = [
                 'tour_id' => $_POST['tour_id'],
                 'start_date' => $_POST['start_date'],
                 'end_date' => $_POST['end_date'],
                 'meeting_time' => $_POST['meeting_time'],
-                'meeting_place' => $_POST['meeting_place']
+                'meeting_place' => $_POST['meeting_place'],
+                // [MỚI] Thêm giá
+                'price_adult' => !empty($_POST['price_adult']) ? $_POST['price_adult'] : 0,
+                'price_child' => !empty($_POST['price_child']) ? $_POST['price_child'] : 0
             ];
 
-            // Mảng ID tài nguyên (Xe, KS)
             $resources = isset($_POST['resources']) ? $_POST['resources'] : [];
-
-            // Mảng ID nhân sự (HDV)
             $staffs = isset($_POST['staffs']) ? $_POST['staffs'] : [];
 
             if ($model->createSchedule($mainData, $resources, $staffs)) {
                 header("Location: " . BASE_URL . "/schedule/index");
             } else {
-                echo "<script>alert('Lỗi tạo lịch! Vui lòng kiểm tra lại.'); window.history.back();</script>";
+                echo "<script>alert('Lỗi tạo lịch!'); window.history.back();</script>";
             }
         }
     }
@@ -138,7 +137,10 @@ class ScheduleController extends Controller
                 'end_date' => $_POST['end_date'],
                 'meeting_time' => $_POST['meeting_time'],
                 'meeting_place' => $_POST['meeting_place'],
-                'status' => $_POST['status']
+                'status' => $_POST['status'],
+                // [MỚI] Thêm giá
+                'price_adult' => !empty($_POST['price_adult']) ? $_POST['price_adult'] : 0,
+                'price_child' => !empty($_POST['price_child']) ? $_POST['price_child'] : 0
             ];
 
             $resources = isset($_POST['resources']) ? $_POST['resources'] : [];

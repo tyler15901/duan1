@@ -8,8 +8,8 @@ class BookingModel extends Model {
         $sql = "SELECT b.*, kh.HoTen as TenKhach, kh.SoDienThoai, t.TenTour, lkh.LichCode 
                 FROM booking b
                 JOIN khachhang kh ON b.MaKhachHang = kh.MaKhachHang
-                LEFT JOIN lichkhoihanh lkh ON b.MaLichKhoiHanh = lkh.MaLichKhoiHanh -- Sửa thành LEFT JOIN
-                LEFT JOIN tour t ON lkh.MaTour = t.MaTour -- Sửa thành LEFT JOIN
+                LEFT JOIN lichkhoihanh lkh ON b.MaLichKhoiHanh = lkh.MaLichKhoiHanh 
+                LEFT JOIN tour t ON lkh.MaTour = t.MaTour 
                 WHERE 1=1";
 
         $params = [];
@@ -18,6 +18,18 @@ class BookingModel extends Model {
         if (!empty($filters['keyword'])) {
             $sql .= " AND (b.MaBookingCode LIKE :kw OR kh.HoTen LIKE :kw OR kh.SoDienThoai LIKE :kw)";
             $params['kw'] = '%' . $filters['keyword'] . '%';
+        }
+
+        // Lọc theo trạng thái xử lý
+        if (!empty($filters['status'])) {
+            $sql .= " AND b.TrangThai = :status";
+            $params['status'] = $filters['status'];
+        }
+
+        // Lọc theo trạng thái thanh toán
+        if (!empty($filters['payment_status'])) {
+            $sql .= " AND b.TrangThaiThanhToan = :pay_status";
+            $params['pay_status'] = $filters['payment_status'];
         }
 
         $sql .= " ORDER BY b.NgayDat DESC LIMIT $limit OFFSET $offset";
@@ -33,10 +45,20 @@ class BookingModel extends Model {
                 JOIN khachhang kh ON b.MaKhachHang = kh.MaKhachHang 
                 WHERE 1=1";
         $params = [];
+        
         if (!empty($filters['keyword'])) {
             $sql .= " AND (b.MaBookingCode LIKE :kw OR kh.HoTen LIKE :kw)";
             $params['kw'] = '%' . $filters['keyword'] . '%';
         }
+        if (!empty($filters['status'])) {
+            $sql .= " AND b.TrangThai = :status";
+            $params['status'] = $filters['status'];
+        }
+        if (!empty($filters['payment_status'])) {
+            $sql .= " AND b.TrangThaiThanhToan = :pay_status";
+            $params['pay_status'] = $filters['payment_status'];
+        }
+
         $stmt = $this->conn->prepare($sql);
         $stmt->execute($params);
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -57,10 +79,10 @@ class BookingModel extends Model {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // 3. Lấy danh sách khách đi kèm (Đã sửa để lấy thêm Họ Tên)
+    // 3. Lấy danh sách khách đi kèm
     public function getGuestList($bookingId) {
-        // Sử dụng LEFT JOIN để lấy tên từ bảng khachhang dựa vào MaKhachHang
-        $sql = "SELECT ct.*, kh.HoTen, kh.SoGiayTo as CCCD_Goc
+        // JOIN bảng chitiet với bảng khachhang để lấy tên
+        $sql = "SELECT ct.*, kh.HoTen
                 FROM chitietkhachbooking ct
                 LEFT JOIN khachhang kh ON ct.MaKhachHang = kh.MaKhachHang
                 WHERE ct.MaBooking = ?";
@@ -70,13 +92,12 @@ class BookingModel extends Model {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // 4. Cập nhật trạng thái & File
+    // 4. Cập nhật trạng thái, File & Tiền cọc
     public function updateBooking($id, $data) {
-        // Thêm cập nhật TienCoc
         $sql = "UPDATE booking SET 
                 TrangThai = :status, 
                 TrangThaiThanhToan = :payment_status,
-                TienCoc = :tien_coc"; // <--- Thêm dòng này
+                TienCoc = :tien_coc"; 
         
         if (!empty($data['file'])) {
             $sql .= ", FileDanhSachKhach = :file";
@@ -87,7 +108,7 @@ class BookingModel extends Model {
         $params = [
             'status' => $data['status'],
             'payment_status' => $data['payment_status'],
-            'tien_coc' => $data['tien_coc'], // <--- Thêm tham số này
+            'tien_coc' => $data['tien_coc'],
             'id' => $id
         ];
         
@@ -99,17 +120,61 @@ class BookingModel extends Model {
         return $stmt->execute($params);
     }
 
+    // --- [MỚI] THÊM KHÁCH VÀO BOOKING (TRANSACTION) ---
+    public function addGuestToBooking($bookingId, $data) {
+        try {
+            $this->conn->beginTransaction();
+
+            // B1: Tạo khách hàng mới trong bảng `khachhang`
+            // (Vì bảng chitietkhachbooking yêu cầu MaKhachHang)
+            $sqlKhach = "INSERT INTO khachhang (HoTen, SoGiayTo, NgayTao) VALUES (:hoten, :giayto, NOW())";
+            $stmt1 = $this->conn->prepare($sqlKhach);
+            $stmt1->execute([
+                'hoten' => $data['ho_ten'], 
+                'giayto' => $data['so_giay_to']
+            ]);
+            $newKhachId = $this->conn->lastInsertId();
+
+            // B2: Thêm vào bảng `chitietkhachbooking`
+            $sqlDetail = "INSERT INTO chitietkhachbooking (MaBooking, MaKhachHang, LoaiKhach, SoGiayTo, GhiChu) 
+                          VALUES (:bk, :kh, :loai, :giayto, :note)";
+            $stmt2 = $this->conn->prepare($sqlDetail);
+            $stmt2->execute([
+                'bk' => $bookingId,
+                'kh' => $newKhachId,
+                'loai' => $data['loai_khach'],
+                'giayto' => $data['so_giay_to'],
+                'note' => $data['ghi_chu']
+            ]);
+
+            $this->conn->commit();
+            return true;
+
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            return false;
+        }
+    }
+
+    // --- [MỚI] XÓA KHÁCH KHỎI BOOKING ---
+    public function removeGuestFromBooking($maChiTiet) {
+        // Chỉ cần xóa trong bảng chi tiết, thông tin khách hàng gốc vẫn giữ để lịch sử (hoặc xóa tùy chính sách)
+        $stmt = $this->conn->prepare("DELETE FROM chitietkhachbooking WHERE MaChiTiet = ?");
+        return $stmt->execute([$maChiTiet]);
+    }
+
     // --- CÁC HÀM HỖ TRỢ TẠO ĐƠN ---
 
-    // Lấy Tour đang hoạt động
     public function getActiveTours() {
         return $this->conn->query("SELECT MaTour, TenTour FROM tour WHERE TrangThai='Hoạt động'")->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // Lấy Lịch theo Tour (Dùng cho AJAX)
    public function getSchedulesByTour($tourId) {
-        
-        $sql = "SELECT l.MaLichKhoiHanh, l.LichCode, l.NgayKhoiHanh, l.SoKhachHienTai, t.SoChoToiDa 
+        // [CẬP NHẬT] Thêm GiaNguoiLon, GiaTreEm vào câu SELECT
+        $sql = "SELECT l.MaLichKhoiHanh, l.LichCode, l.NgayKhoiHanh, l.SoKhachHienTai, 
+                       t.SoChoToiDa, 
+                       l.GiaNguoiLon, l.GiaTreEm 
                 FROM lichkhoihanh l
                 JOIN tour t ON l.MaTour = t.MaTour
                 WHERE l.MaTour = ?";
@@ -119,27 +184,25 @@ class BookingModel extends Model {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Kiểm tra và lấy ID khách hàng (Nếu chưa có thì tạo mới)
-    public function getOrCreateCustomer($name, $phone) {
+    // [ĐÃ CẬP NHẬT] Thêm Email và Địa chỉ
+    public function getOrCreateCustomer($name, $phone, $email = '', $address = '') {
         // 1. Tìm xem SĐT đã có chưa
         $stmt = $this->conn->prepare("SELECT MaKhachHang FROM khachhang WHERE SoDienThoai = ? LIMIT 1");
         $stmt->execute([$phone]);
         $cust = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($cust) {
-            return $cust['MaKhachHang']; // Đã có -> Trả về ID
+            return $cust['MaKhachHang']; 
         } else {
-            // 2. Chưa có -> Tạo mới
-            $sql = "INSERT INTO khachhang (HoTen, SoDienThoai, NgayTao) VALUES (?, ?, NOW())";
+            // 2. Chưa có -> Tạo mới kèm Email, Địa chỉ
+            $sql = "INSERT INTO khachhang (HoTen, SoDienThoai, Email, DiaChi, NgayTao) VALUES (?, ?, ?, ?, NOW())";
             $stmtInsert = $this->conn->prepare($sql);
-            $stmtInsert->execute([$name, $phone]);
-            return $this->conn->lastInsertId(); // Trả về ID mới
+            $stmtInsert->execute([$name, $phone, $email, $address]);
+            return $this->conn->lastInsertId();
         }
     }
 
-    // Tạo Booking mới
     public function createBooking($data) {
-        // 1. INSERT dữ liệu vào DB (Chưa có mã)
         $sql = "INSERT INTO booking (
                     MaTour, MaLichKhoiHanh, MaKhachHang, 
                     NgayKhoiHanh, 
@@ -156,14 +219,10 @@ class BookingModel extends Model {
         $stmt = $this->conn->prepare($sql);
         
         if ($stmt->execute($data)) {
-            // 2. Lấy ID của đơn hàng vừa tạo
             $newId = $this->conn->lastInsertId();
-            
-            // 3. Tạo mã Code chuẩn: BK + Năm hiện tại + ID (được đệm số 0)
-            // Ví dụ: BK2025000091
+            // Mã Code: BK + Năm + ID (6 số)
             $code = 'BK' . date('Y') . str_pad($newId, 6, '0', STR_PAD_LEFT);
             
-            // 4. Cập nhật mã đó ngược lại vào Database
             $sqlUpdate = "UPDATE booking SET MaBookingCode = :code WHERE MaBooking = :id";
             $stmtUpdate = $this->conn->prepare($sqlUpdate);
             $stmtUpdate->execute(['code' => $code, 'id' => $newId]);
@@ -172,5 +231,7 @@ class BookingModel extends Model {
         }
         return false;
     }
+
+    
 }
 ?>
