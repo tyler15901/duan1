@@ -22,10 +22,12 @@ class StaffModel extends Model {
 
     // 2. Lấy chi tiết 1 HDV
     public function getGuideById($id) {
-        $sql = "SELECT ns.*, nd.TenDangNhap, nd.MaNguoiDung 
+        // [ĐÃ SỬA] Thêm nd.TrangThai as TrangThaiTK vào câu SELECT
+        $sql = "SELECT ns.*, nd.TenDangNhap, nd.MaNguoiDung, nd.TrangThai as TrangThaiTK
                 FROM nhansu ns 
                 LEFT JOIN nguoidung nd ON ns.MaNhanSu = nd.MaNhanSu 
                 WHERE ns.MaNhanSu = :id";
+        
         $stmt = $this->conn->prepare($sql);
         $stmt->execute(['id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);

@@ -59,68 +59,84 @@ class TourController extends Controller {
 
     // 3. Hàm xử lý khi bấm nút Lưu (URL: /tour/store)
     // Form action sẽ trỏ về đây: action=".../tour/store"
+    // Xử lý khi bấm nút Lưu (URL: /tour/store)
     public function store() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $tourModel = $this->model('TourModel');
 
-            // --- XỬ LÝ ẢNH ĐẠI DIỆN ---
-            $thumbName = "";
+            // 1. XỬ LÝ ẢNH ĐẠI DIỆN (Thumbnail)
+            $thumbName = null;
             if (!empty($_FILES['hinhanh']['name'])) {
-                $thumbName = time() . '_' . $_FILES['hinhanh']['name'];
+                // Tạo tên file ngẫu nhiên để tránh trùng
+                $thumbName = time() . '_thumb_' . $_FILES['hinhanh']['name'];
                 move_uploaded_file($_FILES['hinhanh']['tmp_name'], '../public/assets/uploads/' . $thumbName);
             }
 
-            // --- GOM DỮ LIỆU CƠ BẢN ---
+            // 2. GOM DỮ LIỆU CƠ BẢN (Tour)
+            // Lưu ý: Các key này phải khớp với tham số trong TourModel -> createTour
             $dataTour = [
-                'TenTour' => $_POST['ten_tour'],
+                'TenTour'    => $_POST['ten_tour'],
                 'MaLoaiTour' => $_POST['loai_tour'],
-                'HinhAnh' => $thumbName,
-                'SoNgay' => $_POST['so_ngay'],
-                'SoChoToiDa' => $_POST['so_cho'],
-                'MoTa' => $_POST['mo_ta'],
-                'ChinhSach' => isset($_POST['chinh_sach']) ? $_POST['chinh_sach'] : '',
-                'TrangThai' => 'Hoạt động'
+                'HinhAnh'    => $thumbName,
+                'SoNgay'     => !empty($_POST['so_ngay']) ? $_POST['so_ngay'] : 1,
+                'SoChoToiDa' => !empty($_POST['so_cho']) ? $_POST['so_cho'] : 20,
+                'MoTa'       => $_POST['mo_ta'],
+                'ChinhSach'  => isset($_POST['chinh_sach']) ? $_POST['chinh_sach'] : '',
+                'TrangThai'  => 'Hoạt động'
             ];
 
-            // --- GỌI MODEL TẠO TOUR ---
+            // 3. GỌI MODEL TẠO TOUR VÀ LẤY ID MỚI
+            // Hàm createTour trong Model bắt buộc phải return $this->conn->lastInsertId();
             $newTourId = $tourModel->createTour($dataTour);
 
             if ($newTourId) {
-                // A. Lưu lịch trình
+                
+                // A. LƯU LỊCH TRÌNH (Schedule)
                 if (isset($_POST['schedule']) && is_array($_POST['schedule'])) {
                     foreach ($_POST['schedule'] as $index => $day) {
-                        // Kiểm tra nếu có tiêu đề mới lưu
+                        // Chỉ lưu nếu có tiêu đề
                         if(!empty($day['title'])) {
+                            // index + 1 vì mảng bắt đầu từ 0 nhưng ngày bắt đầu từ 1
                             $tourModel->addSchedule($newTourId, $index + 1, $day['title'], $day['content']);
                         }
                     }
                 }
 
-                // B. Lưu giá (vào bảng giatour)
+                // B. LƯU GIÁ (QUAN TRỌNG: Xóa dấu chấm/phẩy)
                 if (!empty($_POST['gia_nguoi_lon'])) {
-                    $tourModel->addPrice($newTourId, 'Người lớn', $_POST['gia_nguoi_lon']);
+                    // Biến '1.000.000' thành '1000000'
+                    $priceAdult = str_replace(['.', ','], '', $_POST['gia_nguoi_lon']);
+                    $tourModel->addPrice($newTourId, 'Người lớn', $priceAdult);
                 }
+                
                 if (!empty($_POST['gia_tre_em'])) {
-                    $tourModel->addPrice($newTourId, 'Trẻ em', $_POST['gia_tre_em']);
+                    $priceChild = str_replace(['.', ','], '', $_POST['gia_tre_em']);
+                    $tourModel->addPrice($newTourId, 'Trẻ em', $priceChild);
                 }
 
-                // C. Lưu Gallery ảnh
+                // C. LƯU GALLERY ẢNH (Album)
                 if (isset($_FILES['gallery']) && !empty($_FILES['gallery']['name'][0])) {
                     $count = count($_FILES['gallery']['name']);
+                    
                     for ($i = 0; $i < $count; $i++) {
+                        // Kiểm tra lỗi upload (0 là không lỗi)
                         if ($_FILES['gallery']['error'][$i] == 0) {
                             $galName = time() . '_' . $i . '_' . $_FILES['gallery']['name'][$i];
-                            move_uploaded_file($_FILES['gallery']['tmp_name'][$i], '../public/assets/uploads/' . $galName);
-                            $tourModel->addGalleryImage($newTourId, $galName);
+                            
+                            if (move_uploaded_file($_FILES['gallery']['tmp_name'][$i], '../public/assets/uploads/' . $galName)) {
+                                // Gọi Model lưu tên ảnh vào bảng hinhanhtour
+                                $tourModel->addGalleryImage($newTourId, $galName);
+                            }
                         }
                     }
                 }
 
-                // Lưu xong thì quay về trang danh sách
+                // Lưu thành công -> Chuyển hướng về trang danh sách
                 header("Location: " . BASE_URL . "/tour/index");
                 exit;
             } else {
-                echo "Lỗi: Không thể tạo tour!";
+                // Nếu createTour trả về false (Lỗi SQL)
+                echo "<script>alert('Lỗi: Không thể tạo Tour. Vui lòng kiểm tra lại dữ liệu!'); window.history.back();</script>";
             }
         }
     }

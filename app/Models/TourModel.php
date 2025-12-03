@@ -15,12 +15,14 @@ class TourModel extends Model {
     // Thêm tour mới
     // Sửa lại hàm createTour để trả về ID vừa tạo
     public function createTour($data) {
-        $sql = "INSERT INTO tour (TenTour, MaLoaiTour, HinhAnh, SoNgay, SoChoToiDa, MoTa, ChinhSach, TrangThai) 
-                VALUES (:TenTour, :MaLoaiTour, :HinhAnh, :SoNgay, :SoChoToiDa, :MoTa, :ChinhSach, :TrangThai)";
+        $sql = "INSERT INTO tour (TenTour, MaLoaiTour, HinhAnh, SoNgay, SoChoToiDa, MoTa, ChinhSach, TrangThai, NgayTao) 
+                VALUES (:TenTour, :MaLoaiTour, :HinhAnh, :SoNgay, :SoChoToiDa, :MoTa, :ChinhSach, :TrangThai, NOW())";
         
         $stmt = $this->conn->prepare($sql);
+        
         if ($stmt->execute($data)) {
-            return $this->conn->lastInsertId(); // Trả về ID tour mới
+            // [BẮT BUỘC] Phải trả về ID vừa insert
+            return $this->conn->lastInsertId(); 
         }
         return false;
     }
