@@ -33,6 +33,7 @@ class AuthController extends Controller
                             $_SESSION['fullname'] = $user['HoTen'];
                             $_SESSION['role'] = $user['VaiTro']; // Quan trọng: Lưu vai trò (ADMIN/KhachHang)
                             $_SESSION['avatar'] = $user['Avatar'];
+                            $_SESSION['staff_id'] = $user['MaNhanSu'];
 
                             // 3. Gọi hàm chuyển hướng
                             $this->redirectBasedOnRole();
@@ -54,11 +55,14 @@ class AuthController extends Controller
         // Kiểm tra Vai trò trong Session
         $role = isset($_SESSION['role']) ? strtoupper($_SESSION['role']) : '';
 
-        // Nếu là ADMIN hoặc HDV -> Vào Dashboard
-        if ($role == 'ADMIN' || $role == 'HDV') {
+        if ($role == 'ADMIN') {
+            // 1. Nếu là Admin -> Vào trang Thống kê quản trị
             header("Location: " . BASE_URL . "/dashboard/index");
+        } elseif ($role == 'HDV') {
+            // 2. Nếu là HDV -> Vào trang Lịch làm việc cá nhân (Đây là chỗ cần sửa)
+            header("Location: " . BASE_URL . "/guide/index");
         } else {
-            // Nếu là Khách hàng -> Về trang chủ khách
+            // 3. Khách hàng hoặc khác -> Về trang chủ
             header("Location: " . BASE_URL . "/");
         }
         exit;
