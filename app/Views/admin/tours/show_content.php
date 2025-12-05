@@ -64,10 +64,6 @@
                             <span class="text-muted">Thời lượng:</span>
                             <span class="fw-bold"><?php echo $tour['SoNgay']; ?> ngày</span>
                         </div>
-                        <div class="d-flex justify-content-between py-2 border-bottom">
-                            <span class="text-muted">Số chỗ tối đa:</span>
-                            <span class="fw-bold"><?php echo $tour['SoChoToiDa']; ?> khách</span>
-                        </div>
                         <div class="d-flex justify-content-between py-2 mb-3">
                             <span class="text-muted">Trạng thái:</span>
                             <?php if ($tour['TrangThai'] == 'Hoạt động'): ?>
@@ -76,20 +72,6 @@
                                 <span class="badge bg-danger">Tạm dừng</span>
                             <?php endif; ?>
                         </div>
-                    </div>
-
-                    <h6 class="text-start w-100 fw-bold mt-2 text-primary">Bảng giá tham khảo</h6>
-                    <div class="bg-light p-3 rounded w-100 mb-4">
-                        <?php if (!empty($prices)): ?>
-                            <?php foreach ($prices as $p): ?>
-                                <div class="d-flex justify-content-between mb-1">
-                                    <span><?php echo $p['DoiTuong']; ?></span>
-                                    <strong class="text-danger"><?php echo number_format($p['Gia']); ?> đ</strong>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p class="text-muted small mb-0">Chưa cập nhật giá.</p>
-                        <?php endif; ?>
                     </div>
 
                     <div class="d-grid gap-2 w-100">
