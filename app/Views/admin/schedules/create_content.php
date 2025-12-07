@@ -17,24 +17,30 @@
                     <div class="card-body">
                         <h5 class="card-title">1. Thời gian & Địa điểm</h5>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Chọn Tour <span class="text-danger">*</span></label>
-                            <select name="tour_id" id="tour_select" class="form-select" required
-                                onchange="calcEndDate()">
-                                <option value="" data-days="0">-- Chọn Tour du lịch --</option>
-                                <?php foreach ($tours as $t): ?>
-                                    <option value="<?php echo $t['MaTour']; ?>" data-days="<?php echo $t['SoNgay']; ?>">
-                                        <?php echo $t['TenTour']; ?> (<?php echo $t['SoNgay']; ?> ngày)
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold">Chọn Tour <span class="text-danger">*</span></label>
+                                <select name="tour_id" id="tour_select" class="form-select" required onchange="calcEndDate()">
+                                    <option value="" data-days="0">-- Chọn Tour du lịch --</option>
+                                    <?php foreach ($tours as $t): ?>
+                                        <option value="<?php echo $t['MaTour']; ?>" data-days="<?php echo $t['SoNgay']; ?>">
+                                            <?php echo $t['TenTour']; ?> (<?php echo $t['SoNgay']; ?> ngày)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold text-danger">Số chỗ mở bán</label>
+                                <input type="number" name="so_cho_toi_da" class="form-control" value="20" min="1" required>
+                                <div class="form-text small">VD: Xe 29 chỗ, 45 chỗ...</div>
+                            </div>
                         </div>
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Ngày khởi hành</label>
-                                <input type="date" name="start_date" id="start_date" class="form-control" required
-                                    onchange="calcEndDate()">
+                                <input type="date" name="start_date" id="start_date" class="form-control" required onchange="calcEndDate()">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Ngày về (Dự kiến)</label>
@@ -42,7 +48,7 @@
                             </div>
                         </div>
 
-                        <div class="row g-3 mb-3">
+                        <div class="row g-3 mb-3 bg-light p-3 rounded mx-1 border">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-success">Giá Người lớn (VNĐ)</label>
                                 <div class="input-group">
@@ -61,11 +67,9 @@
                                 </div>
                                 <input type="hidden" name="price_child" id="price_child">
                             </div>
-                            <div class="form-text small text-muted"><i class="bi bi-info-circle"></i> Giá này sẽ áp dụng
-                                cho tất cả khách đặt lịch này.</div>
-                        </div>
-
-                        <div class="row g-3">
+                            <div class="col-12 form-text small text-muted mb-0">
+                                <i class="bi bi-info-circle"></i> Giá này áp dụng riêng cho lịch khởi hành này.
+                            </div>
                         </div>
 
                         <div class="row g-3">
@@ -125,29 +129,36 @@
 </section>
 
 <script>
-
+    // Hàm format tiền tệ (thêm dấu chấm)
     function formatCurrencyInput(input, hiddenId) {
         let value = input.value.replace(/\D/g, '');
         document.getElementById(hiddenId).value = value;
         input.value = value ? new Intl.NumberFormat('vi-VN').format(value) : '';
     }
-    // Giữ nguyên logic JS của bạn, chỉ update style html trả về trong loadAvailableGuides
+
+    // Tính ngày về dựa trên số ngày tour
     function calcEndDate() {
         const tourSelect = document.getElementById('tour_select');
         const startDateInput = document.getElementById('start_date');
         const endDateInput = document.getElementById('end_date');
+        
+        // Lấy số ngày từ data attribute
         const days = parseInt(tourSelect.options[tourSelect.selectedIndex].getAttribute('data-days')) || 0;
         const startDateStr = startDateInput.value;
 
         if (startDateStr && days > 0) {
             const date = new Date(startDateStr);
+            // Ngày về = Ngày đi + (Số ngày - 1)
             date.setDate(date.getDate() + days - 1);
             const endDateStr = date.toISOString().split('T')[0];
             endDateInput.value = endDateStr;
+            
+            // Gọi AJAX check HDV rảnh
             loadAvailableGuides(startDateStr, endDateStr);
         }
     }
 
+    // Load danh sách HDV rảnh
     function loadAvailableGuides(start, end) {
         const container = document.getElementById('guide_container');
         container.innerHTML = '<div class="text-center p-2"><div class="spinner-border spinner-border-sm text-primary"></div> Checking...</div>';
@@ -177,6 +188,10 @@
                 });
                 html += '</div>';
                 container.innerHTML = html;
+            })
+            .catch(err => {
+                console.error(err);
+                container.innerHTML = '<div class="text-danger small text-center">Lỗi kết nối.</div>';
             });
     }
 </script>
