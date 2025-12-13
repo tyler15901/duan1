@@ -15,14 +15,13 @@ class TourModel extends Model {
     // Thêm tour mới
     // Sửa lại hàm createTour để trả về ID vừa tạo
     public function createTour($data) {
-        $sql = "INSERT INTO tour (TenTour, MaLoaiTour, HinhAnh, SoNgay, SoChoToiDa, MoTa, ChinhSach, TrangThai, NgayTao) 
-                VALUES (:TenTour, :MaLoaiTour, :HinhAnh, :SoNgay, :SoChoToiDa, :MoTa, :ChinhSach, :TrangThai, NOW())";
+        $sql = "INSERT INTO tour (TenTour, MaLoaiTour, HinhAnh, SoNgay, MoTa, ChinhSach, TrangThai, NgayTao) 
+                VALUES (:TenTour, :MaLoaiTour, :HinhAnh, :SoNgay, :MoTa, :ChinhSach, :TrangThai, NOW())";
         
         $stmt = $this->conn->prepare($sql);
         
         if ($stmt->execute($data)) {
-            // [BẮT BUỘC] Phải trả về ID vừa insert
-            return $this->conn->lastInsertId(); 
+            return $this->conn->lastInsertId();
         }
         return false;
     }
@@ -92,7 +91,7 @@ class TourModel extends Model {
     public function updateTour($id, $data) {
         $sql = "UPDATE tour SET 
                 TenTour=:TenTour, MaLoaiTour=:MaLoaiTour, SoNgay=:SoNgay, 
-                SoChoToiDa=:SoChoToiDa, MoTa=:MoTa, ChinhSach=:ChinhSach, TrangThai=:TrangThai 
+                 MoTa=:MoTa, ChinhSach=:ChinhSach, TrangThai=:TrangThai 
                 WHERE MaTour=:MaTour";
         // Nếu có cập nhật ảnh đại diện thì nối thêm SQL
         if (!empty($data['HinhAnh'])) {
@@ -115,21 +114,34 @@ class TourModel extends Model {
 
     // --- XÓA (DELETE) ---
     public function deleteTour($id) {
-        // Do DB đã cài đặt ON DELETE CASCADE ở các bảng con (hinhanhtour, lichtrinhtour...)
-        // Nên chỉ cần xóa bảng cha Tour là các bảng con tự bay màu.
-        // Tuy nhiên, nếu Tour đã có Lịch Khởi Hành (LichKhoiHanh), lệnh này sẽ lỗi (do ràng buộc Restrict).
-        try {
-            $stmt = $this->conn->prepare("DELETE FROM tour WHERE MaTour = ?");
-            return $stmt->execute([$id]);
-        } catch (PDOException $e) {
-            return false; // Trả về false nếu dính ràng buộc khóa ngoại
-        }
+        // Kiểm tra xem tour có đơn hàng chưa (tùy chọn, nhưng xóa mềm thì cứ xóa thôi)
+        $sql = "UPDATE tour SET TrangThai = 'Đã xóa' WHERE MaTour = :id";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute(['id' => $id]);
+    }
+
+    // --- [THÊM MỚI] KHÔI PHỤC TOUR (UNDO) ---
+    public function restoreTour($id) {
+        $sql = "UPDATE tour SET TrangThai = 'Hoạt động' WHERE MaTour = :id";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute(['id' => $id]);
+    }
+
+    // --- [THÊM MỚI] LẤY DANH SÁCH TOUR TRONG THÙNG RÁC ---
+    public function getTrashedTours() {
+        $sql = "SELECT t.*, lt.TenLoai FROM tour t 
+                LEFT JOIN loaitour lt ON t.MaLoaiTour = lt.MaLoaiTour 
+                WHERE t.TrangThai = 'Đã xóa' 
+                ORDER BY t.MaTour DESC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
    // 1. LẤY DANH SÁCH TOUR (CÓ LỌC: DANH MỤC, TỪ KHÓA, TRẠNG THÁI)
     public function getToursFiltered($filters = [], $limit = 10, $offset = 0) {
         $sql = "SELECT t.*, lt.TenLoai FROM tour t 
                 LEFT JOIN loaitour lt ON t.MaLoaiTour = lt.MaLoaiTour 
-                WHERE 1=1"; 
+                WHERE t.TrangThai != 'Đã xóa'";
 
         $params = [];
 
@@ -161,7 +173,7 @@ class TourModel extends Model {
 
     // 2. ĐẾM TỔNG SỐ TOUR (Cũng phải thêm lọc trạng thái để tính số trang đúng)
     public function countTours($filters = []) {
-        $sql = "SELECT COUNT(*) as total FROM tour t WHERE 1=1";
+        $sql = "SELECT COUNT(*) as total FROM tour t WHERE t.TrangThai != 'Đã xóa'";
         $params = [];
 
         // [MỚI THÊM]

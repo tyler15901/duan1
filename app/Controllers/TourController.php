@@ -79,7 +79,6 @@ class TourController extends Controller {
                 'MaLoaiTour' => $_POST['loai_tour'],
                 'HinhAnh'    => $thumbName,
                 'SoNgay'     => !empty($_POST['so_ngay']) ? $_POST['so_ngay'] : 1,
-                'SoChoToiDa' => !empty($_POST['so_cho']) ? $_POST['so_cho'] : 20,
                 'MoTa'       => $_POST['mo_ta'],
                 'ChinhSach'  => isset($_POST['chinh_sach']) ? $_POST['chinh_sach'] : '',
                 'TrangThai'  => 'Hoạt động'
@@ -182,7 +181,6 @@ class TourController extends Controller {
                 'TenTour' => $_POST['ten_tour'],
                 'MaLoaiTour' => $_POST['loai_tour'],
                 'SoNgay' => $_POST['so_ngay'],
-                'SoChoToiDa' => $_POST['so_cho'],
                 'MoTa' => $_POST['mo_ta'],
                 'ChinhSach' => $_POST['chinh_sach'],
                 'TrangThai' => $_POST['trang_thai']
@@ -220,14 +218,29 @@ class TourController extends Controller {
         }
     }
 
+    public function trash() {
+        $tourModel = $this->model('TourModel');
+        $data = [
+            'tours' => $tourModel->getTrashedTours()
+        ];
+        $this->view('admin/tours/trash', $data); // Tạo view này ở bước 3
+    }
+
+    // --- [THÊM MỚI] KHÔI PHỤC TOUR ---
+    public function restore($id) {
+        $tourModel = $this->model('TourModel');
+        $tourModel->restoreTour($id);
+        header("Location: " . BASE_URL . "/tour/trash");
+    }
+
     // 7. XÓA TOUR (URL: /tour/delete/1)
     public function delete($id) {
         $tourModel = $this->model('TourModel');
+        // Bây giờ nó là xóa mềm, nên không sợ lỗi khóa ngoại nữa
         if ($tourModel->deleteTour($id)) {
-            header("Location: " . BASE_URL . "/tour/index");
+            echo "<script>alert('Đã chuyển Tour vào thùng rác!'); window.location.href='" . BASE_URL . "/tour/index';</script>";
         } else {
-            // Nếu không xóa được (do dính khóa ngoại với bảng LichKhoiHanh/Booking)
-            echo "<script>alert('Không thể xóa Tour này vì đang có Lịch khởi hành hoặc Đơn hàng liên quan! Hãy xóa lịch trình trước.'); window.location.href='".BASE_URL."/tour/index';</script>";
+            echo "Lỗi hệ thống!";
         }
     }
 }

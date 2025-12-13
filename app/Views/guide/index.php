@@ -1,77 +1,107 @@
 <div class="pagetitle">
-    <h1>Lịch trình phân công</h1>
+    <h1>Lịch trình công việc</h1>
     <nav>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Guide</a></li>
-            <li class="breadcrumb-item active">Danh sách Tour</li>
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
         </ol>
     </nav>
 </div>
 
-<section class="section">
+<section class="section dashboard">
     <div class="row">
-        <?php if (empty($schedules)): ?>
-            <div class="col-12">
-                <div class="alert alert-info border-0 shadow-sm d-flex align-items-center">
-                    <i class="bi bi-info-circle-fill fs-4 me-3"></i>
-                    <div>Hiện tại bạn chưa có lịch trình nào sắp tới. Hãy nghỉ ngơi và nạp năng lượng nhé!</div>
-                </div>
-            </div>
-        <?php else: ?>
-            <?php foreach ($schedules as $s): ?>
-            <div class="col-lg-6">
-                <div class="card mb-4 border-0 shadow-sm h-100">
-                    <div class="row g-0 h-100">
-                        <div class="col-md-4">
-                            <?php $img = $s['HinhAnh'] ? BASE_URL.'/assets/uploads/'.$s['HinhAnh'] : 'https://via.placeholder.com/300x400'; ?>
-                            <img src="<?php echo $img; ?>" class="img-fluid rounded-start h-100" style="object-fit: cover; min-height: 200px;">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card info-card sales-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Tour Được Giao</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-calendar-check"></i>
                         </div>
-                        <div class="col-md-8">
-                            <div class="card-body py-3">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h5 class="card-title p-0 mb-1 text-primary fw-bold"><?php echo $s['TenTour']; ?></h5>
-                                        <span class="badge bg-secondary mb-2"><?php echo $s['LichCode']; ?></span>
-                                    </div>
-                                    <?php 
-                                        $badgeStatus = ($s['TrangThai'] == 'Đang chạy') ? 'bg-success' : 'bg-warning text-dark';
-                                    ?>
-                                    <span class="badge <?php echo $badgeStatus; ?>"><?php echo $s['TrangThai']; ?></span>
-                                </div>
-
-                                <div class="row mt-2 text-muted small">
-                                    <div class="col-6 mb-2">
-                                        <i class="bi bi-calendar-check text-success me-1"></i> 
-                                        <span class="fw-bold">Đi:</span> <?php echo date('d/m/Y', strtotime($s['NgayKhoiHanh'])); ?>
-                                    </div>
-                                    <div class="col-6 mb-2">
-                                        <i class="bi bi-calendar-x text-danger me-1"></i> 
-                                        <span class="fw-bold">Về:</span> <?php echo date('d/m/Y', strtotime($s['NgayKetThuc'])); ?>
-                                    </div>
-                                    <div class="col-12 mb-2">
-                                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>
-                                        <span class="fw-bold">Tập trung:</span> <?php echo $s['GioTapTrung']; ?> tại <?php echo $s['DiaDiemTapTrung']; ?>
-                                    </div>
-                                    <div class="col-12">
-                                        <i class="bi bi-people-fill text-info me-1"></i>
-                                        <span class="fw-bold">Tổng khách:</span> <?php echo $s['SoKhachHienTai']; ?> pax
-                                    </div>
-                                </div>
-
-                                <div class="d-flex gap-2 mt-4">
-                                    <a href="<?php echo BASE_URL; ?>/guide/guests/<?php echo $s['MaLichKhoiHanh']; ?>" class="btn btn-primary flex-fill shadow-sm">
-                                        <i class="bi bi-list-check me-1"></i> Danh sách Khách
-                                    </a>
-                                    <a href="<?php echo BASE_URL; ?>/guide/diary/<?php echo $s['MaLichKhoiHanh']; ?>" class="btn btn-outline-success flex-fill shadow-sm">
-                                        <i class="bi bi-journal-richtext me-1"></i> Nhật ký Tour
-                                    </a>
-                                </div>
-                            </div>
+                        <div class="ps-3">
+                            <h6><?php echo count($schedules); ?></h6>
+                            <span class="text-muted small pt-2 ps-1">lịch trình</span>
                         </div>
                     </div>
                 </div>
             </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
+        </div>
+
+        <div class="col-12">
+            <div class="card recent-sales overflow-auto">
+                <div class="card-body">
+                    <h5 class="card-title">Danh sách phân công <span>| Của bạn</span></h5>
+
+                    <?php if (empty($schedules)): ?>
+                        <div class="alert alert-light text-center border">
+                            <i class="bi bi-info-circle me-1"></i> Bạn chưa có lịch trình nào sắp tới.
+                        </div>
+                    <?php else: ?>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Mã Lịch</th>
+                                        <th scope="col">Tên Tour</th>
+                                        <th scope="col">Thời gian</th>
+                                        <th scope="col">Khách</th>
+                                        <th scope="col">Trạng thái</th>
+                                        <th scope="col" class="text-end">Tác vụ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($schedules as $s): ?>
+                                        <tr>
+                                            <td><span
+                                                    class="badge bg-light text-primary border fw-bold"><?php echo $s['LichCode']; ?></span>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold text-dark"><?php echo $s['TenTour']; ?></div>
+                                                <div class="small text-muted"><i class="bi bi-geo-alt"></i>
+                                                    <?php echo $s['DiaDiemTapTrung']; ?></div>
+                                            </td>
+                                            <td>
+                                                <div><?php echo date('d/m', strtotime($s['NgayKhoiHanh'])); ?></div>
+                                                <div class="small text-muted">đến
+                                                    <?php echo date('d/m', strtotime($s['NgayKetThuc'])); ?></div>
+                                            </td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-info text-dark rounded-pill"><?php echo $s['SoKhachHienTai']; ?>
+                                                    pax</span>
+                                            </td>
+                                            <td>
+                                                <?php
+                                                $statusClass = 'bg-secondary';
+                                                if ($s['TrangThai'] == 'Đang chạy')
+                                                    $statusClass = 'bg-success';
+                                                elseif ($s['TrangThai'] == 'Nhận khách')
+                                                    $statusClass = 'bg-warning text-dark';
+                                                elseif ($s['TrangThai'] == 'Đã đóng sổ')
+                                                    $statusClass = 'bg-danger';
+                                                ?>
+                                                <span
+                                                    class="badge <?php echo $statusClass; ?>"><?php echo $s['TrangThai']; ?></span>
+                                            </td>
+                                            <td class="text-end">
+                                                <a href="<?php echo BASE_URL; ?>/guide/detail/<?php echo $s['MaLichKhoiHanh']; ?>"
+                                                    class="btn btn-sm btn-primary fw-bold me-1" title="Lịch trình chi tiết">
+                                                    <i class="bi bi-calendar-week me-1"></i> Lịch trình
+                                                </a>
+
+                                                <a href="<?php echo BASE_URL; ?>/guide/guests/<?php echo $s['MaLichKhoiHanh']; ?>"
+                                                    class="btn btn-sm btn-outline-secondary" title="Danh sách khách">
+                                                    <i class="bi bi-people-fill"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
     </div>
 </section>

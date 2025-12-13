@@ -67,7 +67,7 @@
                                 </div>
                                 <div class="ps-3">
                                     <h6><?php echo $total_tours; ?></h6>
-                                    <span class="text-danger small pt-1 fw-bold">Active</span> 
+                                    <span class="text-danger small pt-1 fw-bold">Active</span>
                                 </div>
                             </div>
                         </div>
@@ -95,7 +95,7 @@
                     <div class="card recent-sales overflow-auto">
                         <div class="card-body">
                             <h5 class="card-title">Đơn hàng mới nhất <span>| Hôm nay</span></h5>
-                            
+
                             <table class="table table-borderless datatable">
                                 <thead>
                                     <tr>
@@ -135,7 +135,9 @@
                 </div>
 
             </div>
-        </div><div class="col-lg-4">
+        </div>
+
+        <div class="col-lg-4">
 
             <div class="card info-card sales-card">
                 <div class="card-body">
@@ -154,40 +156,71 @@
             </div>
 
             <div class="card">
+                <div class="filter">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                        <li class="dropdown-header text-start"><h6>Bộ lọc</h6></li>
+                        <li><a class="dropdown-item" href="#">Mới nhất</a></li>
+                        <li><a class="dropdown-item" href="#">Đã xem</a></li>
+                    </ul>
+                </div>
+
                 <div class="card-body">
-                    <h5 class="card-title">Hoạt Động <span>| Gần đây</span></h5>
+                    <h5 class="card-title">Thông Báo <span>| Mới nhất</span></h5>
 
                     <div class="activity">
-                        <?php if (!empty($recent_bookings)): ?>
-                            <?php foreach (array_slice($recent_bookings, 0, 5) as $item): ?>
-                            <div class="activity-item d-flex">
-                                <div class="activity-label"><?php echo date('H:i', strtotime($item['NgayDat'])); ?></div>
-                                <i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
-                                <div class="activity-content">
-                                    Khách <strong><?php echo $item['TenKhach']; ?></strong> vừa đặt tour
-                                    <div class="text-muted small"><?php echo number_format($item['TongTien']); ?> vnđ</div>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
+    <?php if (!empty($notifications)): ?>
+        <?php foreach ($notifications as $noti): ?>
+            <div class="activity-item d-flex">
+                <div class="activite-label">
+                    <?php echo date('d/m H:i', strtotime($noti['NgayTao'])); ?>
+                </div>
+                
+                <?php 
+                    // [LOGIC MÀU SẮC]
+                    // Nếu DaXem = 0 (Chưa xem) -> Màu Vàng (warning)
+                    // Nếu DaXem = 1 (Đã xem) -> Màu Xanh (success) hoặc Xám (muted)
+                    $statusColor = ($noti['DaXem'] == 0) ? 'text-warning' : 'text-success';
+                    
+                    // Icon tùy loại
+                    $iconType = 'bi-circle-fill';
+                ?>
+                
+                <i class='bi <?php echo $iconType; ?> activity-badge <?php echo $statusColor; ?> align-self-start'></i>
+                
+                <div class="activity-content">
+                    <strong><?php echo $noti['TieuDe']; ?></strong>
+                    <p class="small text-muted mb-1"><?php echo $noti['NoiDung']; ?></p>
+                    
+                    <?php if (!empty($noti['LienKet'])): ?>
+                        <a href="<?php echo BASE_URL; ?>/dashboard/handle_notification/<?php echo $noti['MaThongBao']; ?>" 
+                           class="btn btn-sm btn-outline-primary py-0 mt-1" 
+                           style="font-size: 11px;">
+                            <i class="bi bi-arrow-right-short"></i> Xử lý ngay
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <div class="text-center py-4 text-muted">
+            <i class="bi bi-bell-slash fs-1 opacity-25"></i>
+            <p class="small mt-2">Hiện tại không có thông báo mới.</p>
+        </div>
+    <?php endif; ?>
+</div>
+
                 </div>
             </div>
 
-            <div class="d-grid gap-2 mt-3">
-                <a href="<?php echo BASE_URL; ?>/booking/create" class="btn btn-primary btn-lg shadow-sm">
-                    <i class="bi bi-plus-lg me-2"></i> Tạo Booking Mới
-                </a>
-            </div>
-
-        </div></div>
+        </div>
+    </div>
 </section>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        // Dữ liệu từ PHP
-        const labels = <?php echo $chart_labels; ?>; 
-        const revenueData = <?php echo $chart_revenue; ?>; 
+        const labels = <?php echo $chart_labels; ?>;
+        const revenueData = <?php echo $chart_revenue; ?>;
         const profitData = <?php echo $chart_profit; ?>;
 
         new ApexCharts(document.querySelector("#reportsChart"), {
@@ -217,13 +250,13 @@
             dataLabels: { enabled: false },
             stroke: { curve: 'smooth', width: 2 },
             xaxis: {
-                type: 'category', 
+                type: 'category',
                 categories: labels,
                 tooltip: { enabled: false }
             },
             tooltip: {
                 y: {
-                    formatter: function(val) {
+                    formatter: function (val) {
                         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
                     }
                 }
